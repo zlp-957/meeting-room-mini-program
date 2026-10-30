@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* 393px 视口下 1rpx = 0.524px，这里按换算后的 px 复现登录页布局，仅用于目视验收 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 393px; height: 852px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(180deg, #ffffff 0%, #e3ecff 22%, #f0f5ff 50%, #f5f6f8 76%, #f5f6f8 100%);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .brand { padding-top: 89px; display: flex; flex-direction: column; align-items: center; }
+  .logo {
+    width: 69px; height: 69px; border-radius: 20px; position: relative;
+    background: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%);
+    box-shadow: 0 9px 23px rgba(37,99,235,.32);
+  }
+  .logo::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 52%;
+    background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0));
+  }
+  .logo-door {
+    position: absolute; left: 50%; top: 27%; width: 43%; height: 51%;
+    transform: translateX(-50%);
+    border: 2.6px solid #fff; border-bottom: none;
+    border-radius: 50% 50% 0 0 / 40% 40% 0 0;
+  }
+  .logo-knob { position: absolute; right: 37%; top: 60%; width: 3.7px; height: 3.7px; border-radius: 50%; background: #fff; }
+  .brand-name { margin-top: 19px; font-size: 24px; font-weight: 700; color: #111827; letter-spacing: 1px; }
+  .brand-sub { margin-top: 7px; font-size: 13.6px; color: #8a94a6; letter-spacing: .5px; }
+
+  /* 修改后的规则 */
+  .feature-list {
+    align-self: center;
+    display: flex; flex-direction: column; align-items: flex-start;
+    margin-top: 40px; max-width: calc(100% - 50px);
+  }
+  .feature-item { display: flex; align-items: center; margin-bottom: 17px; }
+  .feature-item:last-child { margin-bottom: 0; }
+  .feature-dot {
+    width: 29px; height: 29px; border-radius: 8px; background: #fff;
+    box-shadow: 0 2px 7px rgba(37,99,235,.10);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; margin-right: 10px; flex-shrink: 0;
+  }
+  .feature-text { font-size: 13.6px; color: #6b7280; line-height: 1.6; }
+
+  .login-footer { margin-top: auto; padding: 0 29px 40px; }
+  .login-btn {
+    height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%);
+    color: #fff; font-size: 17px; font-weight: 500; letter-spacing: .5px;
+    box-shadow: 0 6px 15px rgba(37,99,235,.26);
+  }
+  .agreement { margin-top: 17px; text-align: center; font-size: 11.5px; color: #9aa3b2; }
+  .link { color: #4b7fe8; }
+  .dev-hint { display: block; margin-top: 9px; text-align: center; font-size: 10.5px; color: #b6bdc9; }
+
+  /* 辅助线：屏幕中线，用来判断是否真的居中 */
+  .axis { position: fixed; top: 0; bottom: 0; left: 50%; width: 1px; background: rgba(239,68,68,.45); }
+</style>
+</head>
+<body>
+  <div class="axis"></div>
+  <div class="brand">
+    <div class="logo"><div class="logo-door"></div><div class="logo-knob"></div></div>
+    <div class="brand-name">会议室预约</div>
+    <div class="brand-sub">预订更简单，开会更从容</div>
+  </div>
+
+  <div class="feature-list">
+    <div class="feature-item"><div class="feature-dot">🕐</div><div class="feature-text">实时查看每间会议室的空闲时段</div></div>
+    <div class="feature-item"><div class="feature-dot">📋</div><div class="feature-text">在线预约，审批进度随时可查</div></div>
+    <div class="feature-item"><div class="feature-dot">📍</div><div class="feature-text">到点签到，让资源不被浪费</div></div>
+  </div>
+
+  <div class="login-footer">
+    <div class="login-btn">微信一键登录</div>
+    <div class="agreement">登录即代表同意 <span class="link">《用户协议》</span> 和 <span class="link">《隐私政策》</span></div>
+    <div class="dev-hint">服务地址：http://localhost:8080（长按上方 Logo 可修改）</div>
+  </div>
+</body>
+</html>

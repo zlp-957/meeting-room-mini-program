@@ -1,0 +1,108 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: meeting-room-backend
+  # 默认走 local profile：本地开发配置（含数据库密码、mock 开关）放在 application-local.yml，
+  # 该文件不纳入版本管理。生产部署请显式指定 --spring.profiles.active=prod
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据库连接全部走环境变量，仓库内不再出现任何明文密码
+    url: ${DB_URL:jdbc:mysql://localhost:3306/meeting_room?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  # 头像上传：单文件上限 5MB（业务层已限制 2MB，这里留余量给出友好提示），单请求 10MB
+  multipart:
+    max-file-size: 5MB
+    max-request-size: 10MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# Sa-Token 配置
+sa-token:
+  token-name: Authorization
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: false
+  token-style: uuid
+  is-log: false
+
+# 微信小程序配置（生产环境通过环境变量注入，禁止写入仓库）
+wechat:
+  appid: ${WECHAT_APPID:your_appid}
+  secret: ${WECHAT_SECRET:your_secret}
+  # 订阅消息模板 ID（需在小程序后台申请后替换；空值表示该场景不发送订阅消息，仅落站内通知）
+  subscribe-templates:
+    remind: ${WECHAT_TPL_REMIND:}
+    violation: ${WECHAT_TPL_VIOLATION:}
+    ban: ${WECHAT_TPL_BAN:}
+
+# 业务配置
+meeting:
+  # ---------------------------------------------------------------
+  # 安全开关：默认值一律取「安全侧」。
+  # 开发环境在 application-local.yml 里显式打开，生产环境保持默认即可。
+  # 启动时 SafetyGuard 会对 prod profile 做一次断言，发现 mock 开启直接拒绝启动。
+  # ---------------------------------------------------------------
+  # 是否启用微信真实接口（true 时用 mock openid，任何人都能伪造身份登录）
+  wechat-mock: ${MEETING_WECHAT_MOCK:false}
+  # 图形验证码调试开关：true 时接口额外返回明文，仅用于本地联调/自动化测试
+  captcha-debug: ${MEETING_CAPTCHA_DEBUG:false}
+  # 预约可提前天数
+  max-advance-days: 14
+  # 单次预约最大时长（小时）
+  max-duration-hours: 4
+  # 预约时段粒度（分钟）
+  slot-minutes: 15
+  # 同会议室相邻两场预约之间的最小间隔（分钟）
+  gap-minutes: 15
+  # 取消预约提前时间（小时）
+  cancel-before-hours: 2
+  # 签到时间窗口 = [会议开始前 N 分钟, 会议开始后 M 分钟]
+  # N：提前开放签到的分钟数（会议开始前多久可以扫码签到）
+  sign-window-minutes: 15
+  # M：会议开始后仍可签到的分钟数，超过即判定违约并释放该时段
+  sign-late-minutes: 15
+  # 连续违约达到该次数即禁止预约
+  violation-ban-threshold: 3
+  # 禁止预约时长（天）
+  violation-ban-days: 30
+  # 临近提醒提前分钟数
+  remind-before-minutes: 30
+  # 跨域白名单（生产必须收敛为实际域名，不支持通配 *）
+  cors:
+    allowed-origins: ${MEETING_CORS_ORIGINS:http://localhost:3000,http://127.0.0.1:3000,http://localhost:8081}
+  # 文件上传（头像）
+  upload:
+    # 落盘目录：相对路径以启动目录为基准，生产环境建议改成绝对路径
+    dir: upload
+    # 单张头像大小上限（KB）
+    max-avatar-size-kb: 2048
+  # 用户自填内容（昵称）安全检测
+  content-security:
+    # true=本地词库 + 微信官方 msg_sec_check；false=只走本地词库
+    # 微信检测需要真实 appid/secret 且用户已登录（有 openid），接口不可用时自动降级放行
+    enabled: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn

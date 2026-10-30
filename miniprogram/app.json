@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/room/detail",
+    "pages/booking/create",
+    "pages/booking/my",
+    "pages/notice/list",
+    "pages/notice/detail",
+    "pages/notification/list",
+    "pages/mine/mine"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "会议室预约",
+    "navigationBarBackgroundColor": "#2563eb",
+    "backgroundColor": "#f5f6f8",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#94a3b8",
+    "selectedColor": "#2563eb",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "会议室",
+        "iconPath": "images/tabbar/room.png",
+        "selectedIconPath": "images/tabbar/room-active.png"
+      },
+      {
+        "pagePath": "pages/booking/my",
+        "text": "我的预约",
+        "iconPath": "images/tabbar/booking.png",
+        "selectedIconPath": "images/tabbar/booking-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/tabbar/mine.png",
+        "selectedIconPath": "images/tabbar/mine-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

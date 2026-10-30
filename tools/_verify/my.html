@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+* , *::before, *::after { animation: none !important; }
+/* ===== 全局公共样式 · 简约现代风 ===== */
+body {
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-light: #eef4ff;
+  --brand-gradient: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%);
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --text-muted: #9aa3b2;
+  --line: #eef1f5;
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-card: 0 2px 12px rgba(17, 24, 39, 0.05);
+  --shadow-float: 0 6px 16px rgba(37, 99, 235, 0.18);
+
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 通用动画关键帧 ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  margin: 10px 16px;
+  box-shadow: var(--shadow-card);
+}
+
+/* 主按钮：用 view 实现，规避微信 button 默认 width:184px 的限制 */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 500;
+  height: 44px;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-float);
+}
+.btn-primary::after { border: none; }
+
+/* 统一按压反馈（配合 hover-class 使用） */
+.btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* 通用加载转圈（view 按钮无法使用 loading 属性） */
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  margin-right: 6px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  animation: btnSpin 0.7s linear infinite;
+}
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* 徽章 */
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-pending { background: #fef3e2; color: #b45309; }
+.badge-approved { background: #e6f4ee; color: #15803d; }
+.badge-rejected { background: #fdeaea; color: #b91c1c; }
+.badge-canceled { background: #eef2f6; color: #64748b; }
+.badge-violated { background: #f1edfa; color: #6d28d9; }
+
+/* 文本省略 */
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 空状态通用 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 70px 0;
+  animation: fadeIn 0.5s ease;
+}
+.empty-icon {
+  font-size: 44px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+.empty-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ===== 骨架屏通用 ===== */
+.skeleton-block {
+  background: linear-gradient(90deg, #f0f2f5 25%, #e6e9ee 37%, #f0f2f5 63%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+.my-booking-body {
+  min-height: 100vh;
+  background: #f5f6f8;
+}
+
+/* ===== 状态切换 ===== */
+.tab-bar {
+  width: 100%;
+  background: #ffffff;
+  white-space: nowrap;
+  box-shadow: 0 1px 6px rgba(17, 24, 39, 0.04);
+}
+
+/* 五个状态等分整行：不能再用 inline-flex（宽度由内容决定，整条会挤在左边、
+   右边空一大片）。flex + width:100% 让每个 tab 拿 20% 宽，文字居中 */
+.tab-inner {
+  display: flex;
+  width: 100%;
+}
+
+.tab-item {
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+  padding: 13px 0;
+  font-size: 13.5px;
+  color: #6b7280;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.tab-item.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 3px;
+  border-radius: 1.5px;
+  background: #2563eb;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===== 列表 ===== */
+.booking-list {
+  padding: 12px 16px 20px;
+}
+
+.booking-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 9px;
+  box-shadow: var(--shadow-card);
+}
+
+.anim-item {
+  animation: fadeInUp 0.4s ease both;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subject {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+.room-line {
+  display: flex;
+  align-items: center;
+  margin-top: 7px;
+}
+
+.room-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #2563eb;
+  opacity: 0.55;
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+
+.room-name {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.time-row {
+  display: flex;
+  align-items: baseline;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+
+.time-date {
+  font-size: 12px;
+  color: #8a94a6;
+  margin-right: 8px;
+}
+
+.time-range {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.5px;
+}
+.checkin-tip {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #15803d;
+  background: #e6f4ee;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.reject-reason {
+  margin-top: 7px;
+  font-size: 11.5px;
+  color: #b91c1c;
+  background: #fdeaea;
+  padding: 7px 9px;
+  border-radius: 5px;
+  line-height: 1.5;
+}
+
+/* 违约说明：与驳回原因区分色系（违约是紫，驳回是红），避免用户混淆 */
+.violated-tip {
+  margin-top: 7px;
+  font-size: 11.5px;
+  color: #6d28d9;
+  background: #f1edfa;
+  padding: 7px 9px;
+  border-radius: 5px;
+  line-height: 1.5;
+}
+
+/*
+ * 签到提示：说明「去哪儿扫、几点前有效」。
+ * 颜色用 #6c7486 而不是常见的 #94a3b8 —— 后者在白底上对比度不足 4.5:1。
+ */
+.sign-hint {
+  margin-top: 7px;
+  font-size: 11px;
+  color: #6c7486;
+  line-height: 1.5;
+}
+
+/* 窗口未开启：提示语用更浅的中性色，与「现在可以去扫」区分开 */
+.sign-hint-wait {
+  color: #8a94a6;
+}
+
+.card-foot {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 0.5px solid #f2f4f7;
+}
+
+.btn-ghost,
+.btn-primary-sm {
+  height: 31px;
+  line-height: 31px;
+  padding: 0 15px;
+  border-radius: 15.5px;
+  font-size: 12.5px;
+  text-align: center;
+  margin-left: 8px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* 三个按钮并排时压缩内边距，避免 375pt 窄屏挤出边界 */
+.card-foot .btn-ghost + .btn-ghost,
+.card-foot .btn-ghost + .btn-primary-sm {
+  margin-left: 6px;
+}
+
+.btn-sm-hover {
+  transform: scale(0.94);
+  opacity: 0.9;
+}
+
+.btn-ghost {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.btn-primary-sm {
+  background: var(--brand-gradient);
+  color: #ffffff;
+  box-shadow: 0 3px 7px rgba(37, 99, 235, 0.22);
+}
+
+/*
+ * 窗口未开启的签到按钮：仍是主色但去饱和，表达「入口在这儿、时候还没到」。
+ * 不做成灰色禁用样式 —— 用户要能点，点了才知道为什么现在扫不了。
+ */
+.btn-primary-wait {
+  background: #93b0f0;
+  box-shadow: none;
+}
+
+body { width: 375px; background: #f5f7fa; }
+</style></head><body><div class="my-booking-page">
+  <div class="tab-bar">
+    <div class="tab-inner">
+      <div class="tab-item">待审批</div>
+      <div class="tab-item active">已通过</div>
+      <div class="tab-item">已驳回</div>
+      <div class="tab-item">已取消</div>
+      <div class="tab-item">已违约</div>
+    </div>
+  </div>
+
+  <div class="booking-list">
+    <div class="booking-card">
+      <div class="card-head">
+        <span class="subject">产品周会</span>
+        <span class="badge badge-approved">已通过</span>
+      </div>
+      <div class="room-line"><div class="room-dot"></div><span class="room-name">3号会议室 · 黄河</span></div>
+      <div class="time-row"><span class="time-date">10月30日 周五</span><span class="time-range">10:00 - 12:00</span></div>
+      <div class="checkin-tip">已签到 · 10:02</div>
+      <div class="sign-hint">扫码签到时间 09:40 - 10:20，请在会议室门口扫码</div>
+      <div class="card-foot">
+        <div class="btn-ghost">修改预约</div>
+        <div class="btn-ghost">取消预约</div>
+        <div class="btn-primary-sm">扫码签到</div>
+      </div>
+    </div>
+    <div class="booking-card">
+      <div class="card-head">
+        <span class="subject">产品周会</span>
+        <span class="badge badge-approved">已通过</span>
+      </div>
+      <div class="room-line"><div class="room-dot"></div><span class="room-name">3号会议室 · 黄河</span></div>
+      <div class="time-row"><span class="time-date">10月30日 周五</span><span class="time-range">10:00 - 12:00</span></div>
+      <div class="checkin-tip">已签到 · 10:02</div>
+      <div class="sign-hint">扫码签到时间 09:40 - 10:20，请在会议室门口扫码</div>
+      <div class="card-foot">
+        <div class="btn-ghost">修改预约</div>
+        <div class="btn-ghost">取消预约</div>
+        <div class="btn-primary-sm">扫码签到</div>
+      </div>
+    </div>
+  </div>
+</div></body></html>

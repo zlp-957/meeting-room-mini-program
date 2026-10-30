@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>会议室预约系统 需求分析与系统设计文档</title>
+<style>
+  /* 页面规则：正文页脚居中页码，封面无页眉页脚 */
+  @page { @bottom-center { content: "第 " counter(page) " 页"; } }
+  @page cover { @bottom-center { content: none; } }
+  section[role="cover"] { page: cover; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "SimSun", "宋体", serif;
+    font-size: 12pt;
+    color: #1a1a1a;
+    line-height: 1.8;
+  }
+  /* 封面 */
+  .cover {
+    text-align: center;
+    padding: 140pt 40pt 60pt;
+  }
+  .cover .cover-title {
+    font-size: 30pt;
+    font-weight: bold;
+    color: #0d47a1;
+    letter-spacing: 2pt;
+    line-height: 1.5;
+    margin-bottom: 30pt;
+  }
+  .cover .cover-sub {
+    font-size: 16pt;
+    color: #444;
+    margin-bottom: 14pt;
+  }
+  .cover .cover-meta {
+    font-size: 13pt;
+    color: #666;
+    margin-top: 60pt;
+    line-height: 2.2;
+  }
+  /* 目录 */
+  nav.doc-toc {
+    padding: 40pt 30pt;
+  }
+  .toc-title {
+    font-size: 20pt;
+    font-weight: bold;
+    color: #0d47a1;
+    text-align: center;
+    margin-bottom: 24pt;
+  }
+  .toc-list, .toc-list ol, .toc-list ul { list-style: none; }
+  .toc-list li {
+    font-size: 13pt;
+    line-height: 2.2;
+    color: #222;
+  }
+  .toc-list a { color: #222; text-decoration: none; }
+  .toc-list ol li { padding-left: 24pt; font-size: 12pt; color: #444; }
+  /* 正文 */
+  .chapter { padding: 24pt 30pt; }
+  h1.section-header {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #0d47a1;
+    padding: 10pt 16pt;
+    margin: 24pt 0 16pt;
+    border-radius: 4pt;
+    text-indent: 0;
+  }
+  h2 {
+    font-size: 15pt;
+    font-weight: bold;
+    color: #0d47a1;
+    margin: 20pt 0 10pt;
+    border-left: 4pt solid #0d47a1;
+    padding-left: 10pt;
+    text-indent: 0;
+  }
+  h3 {
+    font-size: 13pt;
+    font-weight: bold;
+    color: #333;
+    margin: 16pt 0 8pt;
+    text-indent: 0;
+  }
+  p {
+    text-indent: 2em;
+    margin: 6pt 0;
+  }
+  p.no-indent { text-indent: 0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12pt 0;
+    font-size: 11pt;
+  }
+  th, td {
+    border: 1px solid #c9c9c9;
+    padding: 6pt 10pt;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #e8f0fb;
+    color: #0d47a1;
+    font-weight: bold;
+  }
+  tr:nth-child(even) td { background-color: #f7fafd; }
+  pre {
+    background-color: #f4f6f8;
+    border: 1px solid #ddd;
+    border-left: 4px solid #0d47a1;
+    padding: 12pt 16pt;
+    margin: 12pt 0;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    text-indent: 0;
+    color: #333;
+  }
+  ul, ol {
+    margin: 8pt 0 8pt 2em;
+    font-size: 12pt;
+  }
+  li { margin: 4pt 0; }
+  strong { font-weight: bold; }
+</style>
+</head>
+<body>
+
+<section role="cover">
+  <div class="cover">
+    <div class="cover-title">会议室预约系统<br>需求分析与系统设计文档</div>
+    <div class="cover-sub">微信小程序（用户端）· Web 管理后台（管理员端）</div>
+    <div class="cover-sub">内部技术方案 · 验收稿</div>
+    <div class="cover-meta">
+      编制日期：2026 年 10 月<br>
+      文档版本：V1.0
+    </div>
+  </div>
+</section>
+
+<section role="cover">
+  <nav class="doc-toc" aria-label="文档目录">
+    <p class="toc-title">目 录</p>
+    <ol class="toc-list">
+      <li><a href="#section-1">第一章 引言</a>
+        <ol>
+          <li><a href="#section-1-1">1.1 项目背景</a></li>
+          <li><a href="#section-1-2">1.2 项目目标</a></li>
+          <li><a href="#section-1-3">1.3 文档范围</a></li>
+          <li><a href="#section-1-4">1.4 术语定义</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-2">第二章 需求分析</a>
+        <ol>
+          <li><a href="#section-2-1">2.1 用户角色与权限</a></li>
+          <li><a href="#section-2-2">2.2 功能需求</a></li>
+          <li><a href="#section-2-3">2.3 非功能需求</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-3">第三章 系统总体设计</a>
+        <ol>
+          <li><a href="#section-3-1">3.1 总体架构</a></li>
+          <li><a href="#section-3-2">3.2 技术栈选型</a></li>
+          <li><a href="#section-3-3">3.3 功能模块划分</a></li>
+          <li><a href="#section-3-4">3.4 数据库设计</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-4">第四章 详细设计</a>
+        <ol>
+          <li><a href="#section-4-1">4.1 微信小程序登录流程</a></li>
+          <li><a href="#section-4-2">4.2 预约核心业务流程</a></li>
+          <li><a href="#section-4-3">4.3 关键接口清单</a></li>
+          <li><a href="#section-4-4">4.4 权限设计</a></li>
+        </ol>
+      </li>
+      <li><a href="#section-5">第五章 业务规则默认设计</a></li>
+      <li><a href="#section-6">第六章 开发计划与里程碑</a></li>
+    </ol>
+  </nav>
+</section>
+
+<section class="chapter" data-page-restart="1">
+  <h1 class="section-header" id="section-1">第一章 引言</h1>
+
+  <h2 id="section-1-1">1.1 项目背景</h2>
+  <p>随着企业规模的扩大和员工数量的增加，会议室资源的使用频率日益提升。传统的会议室管理方式（口头沟通、微信群接龙、纸质登记）存在诸多弊端：信息不透明、容易重复预订、无法追溯使用记录、管理员难以统一调度等。</p>
+  <p>为解决上述问题，本项目拟开发一套<strong>企业内部会议室预约系统</strong>，采用「微信小程序（用户端）+ Web 管理后台（管理员端）」的双端架构，实现会议室资源的数字化、流程化、透明化管理。</p>
+
+  <h2 id="section-1-2">1.2 项目目标</h2>
+  <ol>
+    <li>为普通员工提供便捷的会议室浏览、预约、取消、签到等自助服务；</li>
+    <li>为管理员提供会议室、设备、预约审核、用户、公告、数据统计等后台管理能力；</li>
+    <li>实现预约冲突自动检测，避免重复预订；</li>
+    <li>沉淀预约使用数据，为会议室资源优化提供决策依据。</li>
+  </ol>
+
+  <h2 id="section-1-3">1.3 文档范围</h2>
+  <p>本文档涵盖该系统的需求分析、系统总体设计、详细设计以及技术栈选型，作为项目开发的指导依据，验收通过后进入编码实现阶段。</p>
+
+  <h2 id="section-1-4">1.4 术语定义</h2>
+  <table>
+    <thead><tr><th>术语</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>用户端</td><td>面向普通员工的微信小程序</td></tr>
+      <tr><td>管理员端</td><td>面向管理员的 Web 管理后台</td></tr>
+      <tr><td>openid</td><td>微信用户在特定小程序下的唯一标识</td></tr>
+      <tr><td>预约</td><td>用户对某一会议室在特定时间段的使用申请</td></tr>
+      <tr><td>审批</td><td>管理员对用户预约申请的通过/驳回操作</td></tr>
+      <tr><td>违约</td><td>预约后未按时签到，占用资源的行为</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="chapter">
+  <h1 class="section-header" id="section-2">第二章 需求分析</h1>
+
+  <h2 id="section-2-1">2.1 用户角色与权限</h2>
+  <p>系统涉及两类角色：</p>
+  <table>
+    <thead><tr><th>角色</th><th>说明</th><th>使用端</th></tr></thead>
+    <tbody>
+      <tr><td>普通用户</td><td>企业员工，进行会议室预约</td><td>微信小程序</td></tr>
+      <tr><td>管理员</td><td>系统管理者，进行资源与预约管理</td><td>Web 管理后台</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="section-2-2">2.2 功能需求</h2>
+  <h3>2.2.1 用户端功能（微信小程序）</h3>
+  <table>
+    <thead><tr><th>编号</th><th>功能模块</th><th>功能描述</th></tr></thead>
+    <tbody>
+      <tr><td>U-01</td><td>登录</td><td>微信一键登录，自动获取 openid 并绑定手机号</td></tr>
+      <tr><td>U-02</td><td>浏览会议室</td><td>查看会议室列表、图片、容量、设备、位置信息</td></tr>
+      <tr><td>U-03</td><td>预约会议室</td><td>选择会议室与时间段，提交预约申请</td></tr>
+      <tr><td>U-04</td><td>我的预约</td><td>查看个人预约记录及状态（待审批/已通过/已驳回/已取消）</td></tr>
+      <tr><td>U-05</td><td>取消预约</td><td>在允许时间范围内取消已通过的预约</td></tr>
+      <tr><td>U-06</td><td>签到</td><td>预约开始前在会议室内扫码/定位签到</td></tr>
+      <tr><td>U-07</td><td>查看公告</td><td>查看管理员发布的系统公告</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2.2 管理员端功能（Web 管理后台）</h3>
+  <table>
+    <thead><tr><th>编号</th><th>功能模块</th><th>功能描述</th></tr></thead>
+    <tbody>
+      <tr><td>A-01</td><td>登录</td><td>账号密码登录，含图形验证码</td></tr>
+      <tr><td>A-02</td><td>会议室管理</td><td>会议室的增删改查、启用/停用、图片上传</td></tr>
+      <tr><td>A-03</td><td>设备管理</td><td>会议室设备（投影、白板、视频会议等）的维护</td></tr>
+      <tr><td>A-04</td><td>预约审核</td><td>查看待审批预约，通过/驳回</td></tr>
+      <tr><td>A-05</td><td>预约管理</td><td>查看全部预约、代用户取消、查看违约记录</td></tr>
+      <tr><td>A-06</td><td>用户管理</td><td>查看用户、禁用/解禁、角色设置</td></tr>
+      <tr><td>A-07</td><td>公告管理</td><td>发布、编辑、下线公告</td></tr>
+      <tr><td>A-08</td><td>数据统计</td><td>会议室使用率、预约趋势等统计报表</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="section-2-3">2.3 非功能需求</h2>
+  <table>
+    <thead><tr><th>类别</th><th>需求描述</th></tr></thead>
+    <tbody>
+      <tr><td>性能</td><td>常规接口响应时间小于 500ms；列表查询支持分页</td></tr>
+      <tr><td>安全</td><td>用户身份通过 token 鉴权；密码加密存储；接口防越权</td></tr>
+      <tr><td>可用性</td><td>系统 7×24 小时可用，可用性 ≥ 99%</td></tr>
+      <tr><td>易用性</td><td>小程序操作路径 ≤ 3 步完成预约</td></tr>
+      <tr><td>可维护性</td><td>前后端分离，代码分层清晰，便于扩展</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="chapter">
+  <h1 class="section-header" id="section-3">第三章 系统总体设计</h1>
+
+  <h2 id="section-3-1">3.1 总体架构</h2>
+  <p>系统采用前后端分离架构，整体分为三层：</p>
+  <pre>
+┌─────────────────┐   ┌──────────────────┐
+│  微信小程序(用户) │   │  Web 管理端(Vue3) │
+└────────┬────────┘   └────────┬─────────┘
+         │      HTTPS/JSON     │
+         └──────────┬──────────┘
+                    ▼
+        ┌───────────────────────┐
+        │   Spring Boot 后端服务 │
+        │  (Controller/Service/ │
+        │   Mapper 三层结构)     │
+        └───────────┬───────────┘
+                    ▼
+        ┌───────────────────────┐
+        │     MySQL 8.0 数据库  │
+        └───────────────────────┘</pre>
+
+  <h2 id="section-3-2">3.2 技术栈选型</h2>
+  <table>
+    <thead><tr><th>层次</th><th>技术选型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>用户端</td><td>微信小程序原生框架</td><td>直接对接微信登录、手机号组件</td></tr>
+      <tr><td>管理员端</td><td>Vue3 + Vite + Element Plus + Axios</td><td>JavaScript，现代化前端</td></tr>
+      <tr><td>后端</td><td>Spring Boot 2.7.x</td><td>成熟稳定，生态完善</td></tr>
+      <tr><td>ORM</td><td>MyBatis-Plus</td><td>简化 CRUD，分页插件</td></tr>
+      <tr><td>数据库</td><td>MySQL 8.0</td><td>关系型数据存储</td></tr>
+      <tr><td>鉴权</td><td>Sa-Token</td><td>轻量级权限认证框架，支持 token 会话</td></tr>
+      <tr><td>缓存</td><td>Redis（可选）</td><td>验证码、热点数据缓存</td></tr>
+      <tr><td>部署</td><td>Nginx + 单体应用</td><td>前后端分离部署</td></tr>
+    </tbody>
+  </table>
+  <p><strong>选型理由</strong>：整体技术栈贴合主流企业内部系统开发实践，且与团队既有技能栈（Spring Boot + MyBatis-Plus + MySQL + Sa-Token）高度一致，降低开发与维护成本。管理员端选用 Vue3 而非 Vue2，兼顾技术先进性与长期维护性。</p>
+
+  <h2 id="section-3-3">3.3 功能模块划分</h2>
+  <pre>
+会议室预约系统
+├── 用户端模块（小程序）
+│   ├── 登录模块
+│   ├── 会议室模块（浏览）
+│   ├── 预约模块（预约/取消/签到）
+│   └── 公告模块（查看）
+└── 管理员端模块（Web）
+    ├── 登录模块
+    ├── 会议室管理模块
+    ├── 设备管理模块
+    ├── 预约管理模块（审核/管理）
+    ├── 用户管理模块
+    ├── 公告管理模块
+    └── 数据统计模块</pre>
+
+  <h2 id="section-3-4">3.4 数据库设计</h2>
+  <h3>3.4.1 核心表清单</h3>
+  <table>
+    <thead><tr><th>表名</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>sys_user</td><td>用户表（小程序用户）</td></tr>
+      <tr><td>sys_admin</td><td>管理员表</td></tr>
+      <tr><td>meeting_room</td><td>会议室表</td></tr>
+      <tr><td>room_device</td><td>会议室设备表</td></tr>
+      <tr><td>booking</td><td>预约记录表</td></tr>
+      <tr><td>announcement</td><td>公告表</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.4.2 关键表字段设计</h3>
+  <p><strong>sys_user（用户表）</strong></p>
+  <table>
+    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>id</td><td>bigint</td><td>主键</td></tr>
+      <tr><td>openid</td><td>varchar(64)</td><td>微信 openid，唯一</td></tr>
+      <tr><td>phone</td><td>varchar(20)</td><td>绑定手机号</td></tr>
+      <tr><td>nickname</td><td>varchar(64)</td><td>昵称</td></tr>
+      <tr><td>avatar</td><td>varchar(255)</td><td>头像 URL</td></tr>
+      <tr><td>status</td><td>tinyint</td><td>状态（1正常/0禁用）</td></tr>
+      <tr><td>create_time</td><td>datetime</td><td>创建时间</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>sys_admin（管理员表）</strong></p>
+  <table>
+    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>id</td><td>bigint</td><td>主键</td></tr>
+      <tr><td>username</td><td>varchar(32)</td><td>登录账号，唯一</td></tr>
+      <tr><td>password</td><td>varchar(64)</td><td>密码（BCrypt 加密）</td></tr>
+      <tr><td>role</td><td>varchar(16)</td><td>角色</td></tr>
+      <tr><td>status</td><td>tinyint</td><td>状态</td></tr>
+      <tr><td>create_time</td><td>datetime</td><td>创建时间</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>meeting_room（会议室表）</strong></p>
+  <table>
+    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>id</td><td>bigint</td><td>主键</td></tr>
+      <tr><td>name</td><td>varchar(64)</td><td>会议室名称</td></tr>
+      <tr><td>capacity</td><td>int</td><td>容纳人数</td></tr>
+      <tr><td>location</td><td>varchar(128)</td><td>位置</td></tr>
+      <tr><td>image</td><td>varchar(255)</td><td>图片 URL</td></tr>
+      <tr><td>open_time</td><td>time</td><td>开放开始时间</td></tr>
+      <tr><td>close_time</td><td>time</td><td>开放结束时间</td></tr>
+      <tr><td>status</td><td>tinyint</td><td>状态（1启用/0停用）</td></tr>
+      <tr><td>remark</td><td>varchar(255)</td><td>备注</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>booking（预约记录表）</strong></p>
+  <table>
+    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>id</td><td>bigint</td><td>主键</td></tr>
+      <tr><td>user_id</td><td>bigint</td><td>预约用户</td></tr>
+      <tr><td>room_id</td><td>bigint</td><td>会议室</td></tr>
+      <tr><td>start_time</td><td>datetime</td><td>开始时间</td></tr>
+      <tr><td>end_time</td><td>datetime</td><td>结束时间</td></tr>
+      <tr><td>status</td><td>tinyint</td><td>状态（0待审批/1已通过/2已驳回/3已取消/4已违约）</td></tr>
+      <tr><td>subject</td><td>varchar(128)</td><td>会议主题</td></tr>
+      <tr><td>create_time</td><td>datetime</td><td>创建时间</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>announcement（公告表）</strong></p>
+  <table>
+    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>id</td><td>bigint</td><td>主键</td></tr>
+      <tr><td>title</td><td>varchar(128)</td><td>标题</td></tr>
+      <tr><td>content</td><td>text</td><td>内容</td></tr>
+      <tr><td>publisher</td><td>bigint</td><td>发布人</td></tr>
+      <tr><td>status</td><td>tinyint</td><td>状态（1上线/0下线）</td></tr>
+      <tr><td>create_time</td><td>datetime</td><td>发布时间</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="chapter">
+  <h1 class="section-header" id="section-4">第四章 详细设计</h1>
+
+  <h2 id="section-4-1">4.1 微信小程序登录流程</h2>
+  <p>登录采用「微信授权 + 手机号绑定」方案，核心流程如下：</p>
+  <pre>
+1. 用户点击登录按钮，调用 wx.login() 获取临时 code
+2. 前端将 code 发送至后端 /api/auth/login
+3. 后端携带 code 调用微信 code2session 接口，换取 openid
+4. 后端根据 openid 查询用户：
+   - 已存在 → 直接签发 token
+   - 不存在 → 返回"需绑定手机号"标识
+5. 用户触发手机号授权，通过 &lt;button open-type="getPhoneNumber"&gt;
+   获取加密的 phoneCode
+6. 前端将 phoneCode 发送至后端 /api/auth/bind-phone
+7. 后端调用微信 getPhoneNumber 接口解密，得到手机号
+8. 创建/更新用户记录，签发 Sa-Token 的 token
+9. 后续请求均携带 token 进行鉴权</pre>
+  <p><strong>关键点</strong>：openid 作为用户唯一标识，天然防重复注册；手机号由微信接口安全解密，后端拿到的是微信绑定手机号，用户无需手动输入；token 由 Sa-Token 统一管理，支持过期刷新。</p>
+
+  <h2 id="section-4-2">4.2 预约核心业务流程</h2>
+  <h3>4.2.1 预约流程</h3>
+  <pre>
+1. 用户选择会议室与时间段（起止时间）
+2. 前端提交预约请求
+3. 后端进行冲突检测：查询该会议室该时间段内
+   是否存在"已通过"或"待审批"的预约记录
+4. 无冲突 → 创建预约记录（状态=待审批/已通过，视规则而定）
+   有冲突 → 返回冲突提示
+5. 若需审批，管理员在后台审核通过/驳回
+6. 预约通过后，用户按时签到使用</pre>
+
+  <h3>4.2.2 时间冲突检测逻辑</h3>
+  <p>冲突判定条件：同一会议室内，新预约时间区间与已有有效预约时间区间存在交集。</p>
+  <pre>
+冲突条件：
+new.start_time &lt; existing.end_time AND new.end_time &gt; existing.start_time</pre>
+
+  <h3>4.2.3 取消与违约规则</h3>
+  <ul>
+    <li>用户在预约开始前可自行取消（如提前 2 小时）；</li>
+    <li>预约开始后未签到，标记为"违约"；</li>
+    <li>违约次数累计达到阈值（如 3 次），可限制预约权限。</li>
+  </ul>
+
+  <h2 id="section-4-3">4.3 关键接口清单</h2>
+  <h3>4.3.1 用户端接口</h3>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td>/api/auth/login</td><td>微信登录（code 换 token）</td></tr>
+      <tr><td>POST</td><td>/api/auth/bind-phone</td><td>绑定手机号</td></tr>
+      <tr><td>GET</td><td>/api/room/list</td><td>会议室列表</td></tr>
+      <tr><td>GET</td><td>/api/room/{id}</td><td>会议室详情</td></tr>
+      <tr><td>POST</td><td>/api/booking/create</td><td>创建预约</td></tr>
+      <tr><td>GET</td><td>/api/booking/my</td><td>我的预约列表</td></tr>
+      <tr><td>POST</td><td>/api/booking/cancel/{id}</td><td>取消预约</td></tr>
+      <tr><td>POST</td><td>/api/booking/sign/{id}</td><td>签到</td></tr>
+      <tr><td>GET</td><td>/api/announcement/list</td><td>公告列表</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.3.2 管理员端接口</h3>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td>/api/admin/login</td><td>管理员登录（账号密码+验证码）</td></tr>
+      <tr><td>GET</td><td>/api/admin/captcha</td><td>获取图形验证码</td></tr>
+      <tr><td>POST</td><td>/api/admin/room</td><td>新增会议室</td></tr>
+      <tr><td>PUT</td><td>/api/admin/room/{id}</td><td>修改会议室</td></tr>
+      <tr><td>DELETE</td><td>/api/admin/room/{id}</td><td>删除会议室</td></tr>
+      <tr><td>GET</td><td>/api/admin/booking/list</td><td>预约列表（可筛选）</td></tr>
+      <tr><td>POST</td><td>/api/admin/booking/approve/{id}</td><td>审批通过</td></tr>
+      <tr><td>POST</td><td>/api/admin/booking/reject/{id}</td><td>审批驳回</td></tr>
+      <tr><td>GET</td><td>/api/admin/user/list</td><td>用户列表</td></tr>
+      <tr><td>PUT</td><td>/api/admin/user/{id}/status</td><td>启用/禁用用户</td></tr>
+      <tr><td>POST</td><td>/api/admin/announcement</td><td>发布公告</td></tr>
+      <tr><td>GET</td><td>/api/admin/stats</td><td>数据统计</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="section-4-4">4.4 权限设计</h2>
+  <p>基于 Sa-Token 实现角色权限控制：</p>
+  <table>
+    <thead><tr><th>角色</th><th>可访问接口</th><th>权限说明</th></tr></thead>
+    <tbody>
+      <tr><td>普通用户</td><td>/api/auth、/api/room、/api/booking、/api/announcement</td><td>预约、查看</td></tr>
+      <tr><td>管理员</td><td>/api/admin/**</td><td>全部管理操作</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>小程序端通过 token 识别普通用户身份；</li>
+    <li>Web 端通过 token 识别管理员身份，未登录或越权访问返回 401/403；</li>
+    <li>Sa-Token 通过注解（如 @SaCheckRole("admin")）进行方法级权限校验。</li>
+  </ul>
+</section>
+
+<section class="chapter">
+  <h1 class="section-header" id="section-5">第五章 业务规则默认设计</h1>
+  <table>
+    <thead><tr><th>规则项</th><th>默认设计</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>预约时段粒度</td><td>30 分钟</td><td>支持按 30 分钟取整</td></tr>
+      <tr><td>单次预约时长</td><td>1-4 小时</td><td>可配置上限</td></tr>
+      <tr><td>提前预约</td><td>可提前 7 天</td><td>可配置</td></tr>
+      <tr><td>是否需审批</td><td>默认需审批</td><td>可切换为免审批模式</td></tr>
+      <tr><td>取消规则</td><td>开始前 2 小时可取消</td><td>可配置</td></tr>
+      <tr><td>签到规则</td><td>开始前后 15 分钟内签到</td><td>未签到计违约</td></tr>
+      <tr><td>违约限制</td><td>累计 3 次限制预约 7 天</td><td>可配置</td></tr>
+      <tr><td>会议室开放时间</td><td>按会议室独立配置</td><td>默认 08:00-20:00</td></tr>
+      <tr><td>设备管理</td><td>投影/白板/视频会议/电话</td><td>可按需扩展</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="chapter">
+  <h1 class="section-header" id="section-6">第六章 开发计划与里程碑</h1>
+  <table>
+    <thead><tr><th>阶段</th><th>内容</th><th>交付物</th></tr></thead>
+    <tbody>
+      <tr><td>阶段一</td><td>后端基础框架 + 登录鉴权</td><td>可运行的登录接口</td></tr>
+      <tr><td>阶段二</td><td>会议室/预约核心功能</td><td>预约全流程打通</td></tr>
+      <tr><td>阶段三</td><td>小程序端开发</td><td>用户端功能完成</td></tr>
+      <tr><td>阶段四</td><td>管理端开发</td><td>后台管理功能完成</td></tr>
+      <tr><td>阶段五</td><td>联调测试与上线</td><td>完整可交付系统</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</body>
+</html>

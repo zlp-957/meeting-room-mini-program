@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>tabBar 图标预览</title>
+<style>
+  body { margin:0; padding:40px; background:#f5f6f8;
+         font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; color:#111827; }
+  h1 { font-size:18px; font-weight:600; margin:0 0 6px; }
+  p.sub { font-size:13px; color:#6b7280; margin:0 0 28px; }
+  .card { background:#fff; border-radius:16px; padding:8px 28px 24px;
+          box-shadow:0 2px 12px rgba(17,24,39,.06); margin-bottom:24px; }
+  .row { display:flex; align-items:center; gap:0; padding:18px 0;
+         border-bottom:1px solid #f2f4f7; }
+  .row:last-child { border-bottom:none; }
+  .label { width:110px; font-size:14px; color:#374151; font-weight:500; }
+  .cell { display:flex; align-items:center; gap:6px; margin-right:44px; }
+  .cell img { display:block; }
+  .s27 { width:27px; height:27px; }
+  .s54 { width:54px; height:54px; }
+  .s81 { width:81px; height:81px; }
+  .cap { font-size:11px; color:#9aa3b2; margin-left:6px; }
+  .bar { display:flex; align-items:center; gap:24px; background:#fff; border-radius:16px;
+         padding:14px 28px; box-shadow:0 2px 12px rgba(17,24,39,.06); }
+  .bar .t { font-size:12px; color:#94a3b8; }
+  .bar .t.on { color:#2563eb; font-weight:600; }
+  .bar img { width:24px; height:24px; display:block; margin-bottom:2px; }
+  .bar .item { display:flex; flex-direction:column; align-items:center; gap:2px; }
+</style></head>
+<body>
+  <h1>tabBar 图标预览</h1>
+  <p class="sub">左列为未选中态（#94a3b8），右列为选中态（#2563eb）。请重点看 27px 那一组，那是真机实际显示大小。</p>
+  <div class="card">
+    <div class="row">
+      <div class="label">room</div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/room.png" class="s27"><img src="../miniprogram/images/tabbar/room-active.png" class="s27"><span class="cap">27px 实际尺寸</span></div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/room.png" class="s54"><img src="../miniprogram/images/tabbar/room-active.png" class="s54"><span class="cap">54px</span></div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/room.png" class="s81"><img src="../miniprogram/images/tabbar/room-active.png" class="s81"><span class="cap">81px 原始</span></div>
+    </div>
+    <div class="row">
+      <div class="label">booking</div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/booking.png" class="s27"><img src="../miniprogram/images/tabbar/booking-active.png" class="s27"><span class="cap">27px 实际尺寸</span></div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/booking.png" class="s54"><img src="../miniprogram/images/tabbar/booking-active.png" class="s54"><span class="cap">54px</span></div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/booking.png" class="s81"><img src="../miniprogram/images/tabbar/booking-active.png" class="s81"><span class="cap">81px 原始</span></div>
+    </div>
+    <div class="row">
+      <div class="label">mine</div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/mine.png" class="s27"><img src="../miniprogram/images/tabbar/mine-active.png" class="s27"><span class="cap">27px 实际尺寸</span></div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/mine.png" class="s54"><img src="../miniprogram/images/tabbar/mine-active.png" class="s54"><span class="cap">54px</span></div>
+      <div class="cell"><img src="../miniprogram/images/tabbar/mine.png" class="s81"><img src="../miniprogram/images/tabbar/mine-active.png" class="s81"><span class="cap">81px 原始</span></div>
+    </div></div>
+  <h1 style="font-size:14px;margin-bottom:12px;">模拟 tabBar 效果</h1>
+  <div class="bar">
+    <div class="item"><img src="../miniprogram/images/tabbar/room-active.png"><span class="t on">会议室</span></div>
+    <div class="item"><img src="../miniprogram/images/tabbar/booking.png"><span class="t">我的预约</span></div>
+    <div class="item"><img src="../miniprogram/images/tabbar/mine.png"><span class="t">我的</span></div>
+  </div>
+</body></html>

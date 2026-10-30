@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* 393px 视口，1rpx = 0.524px；用于对比两种布局结论 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #eef1f6; padding: 14px; }
+  .row { display: flex; gap: 14px; margin-bottom: 14px; }
+  .panel { width: 393px; height: 520px; position: relative; overflow: hidden; background: #f5f6f8;
+    border-radius: 12px; box-shadow: 0 4px 18px rgba(15,23,42,.08); }
+  .tag { position: absolute; top: 8px; left: 8px; font-size: 11px; color: #fff; background: rgba(15,23,42,.6);
+    padding: 3px 8px; border-radius: 10px; z-index: 5; }
+
+  .hero { padding: 29px 21px 42px;
+    background: linear-gradient(180deg, #2563eb 0%, #2258dd 55%, #1d4ed8 100%);
+    border-radius: 0 0 21px 21px; margin-bottom: -25px; }
+  .room-name { font-size: 25px; font-weight: 700; color: #fff; letter-spacing: .5px; }
+  .hero-meta { display: flex; align-items: center; margin-top: 10px; }
+  .capacity-pill { font-size: 12px; color: #2563eb; background: #fff; padding: 4px 10px; border-radius: 12px;
+    font-weight: 500; box-shadow: 0 2px 6px rgba(29,78,216,.18); }
+  .hero-hours { font-size: 12.6px; color: rgba(255,255,255,.9); margin-left: 9px; }
+  .info-card { background: #fff; border-radius: 13px; margin: 0 17px 10px; padding: 3px 15px;
+    box-shadow: 0 2px 8px rgba(17,24,39,.06); }
+
+  /* 改前 */
+  .before .info-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0;
+    border-bottom: 1px solid #f2f4f7; }
+  .before .info-item:last-child { border-bottom: none; }
+  .before .info-label { font-size: 14.1px; color: #8a94a6; flex-shrink: 0; }
+  .before .info-value { font-size: 14.1px; color: #1f2937; text-align: right; max-width: 225px; line-height: 1.5; }
+  .before .remark { color: #6b7280; }
+
+  /* 方案 S：堆叠（已实现） */
+  .s .info-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 15px 0;
+    border-bottom: 1px solid #f2f4f7; }
+  .s .info-item:last-child { border-bottom: none; }
+  .s .info-label { flex-shrink: 0; font-size: 14.1px; line-height: 1.75; color: #8a94a6; }
+  .s .info-value { font-size: 14.1px; color: #1f2937; text-align: right; max-width: 263px; line-height: 1.75;
+    min-width: 0; }
+  .s .info-item.is-block { display: block; }
+  .s .info-item.is-block .info-label { display: block; font-size: 13.1px; line-height: 1.4; color: #8a94a6; }
+  .s .info-item.is-block .info-value { display: block; margin-top: 7px; max-width: none; text-align: left;
+    color: #6b7280; white-space: pre-wrap; }
+
+  /* 方案 L：单一左轴（体验侧 v2 主张） */
+  .l .info-item { display: flex; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #f2f4f7; }
+  .l .info-item:last-child { border-bottom: none; }
+  .l .info-label { flex: 0 0 67px; font-size: 14.1px; line-height: 1.5; color: #8a94a6; }
+  .l .info-value { flex: 1; min-width: 0; font-size: 14.1px; line-height: 1.5; color: #1f2937; text-align: left;
+    word-break: break-word; overflow-wrap: break-word; }
+  .l .info-value.remark { line-height: 1.75; color: #6b7280; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="panel before">
+      <div class="tag">① 改前 · 右对齐 3 行，末行孤字「响」</div>
+      <div class="hero"><div class="room-name">多功能厅</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 20 人</div><div class="hero-hours">开放 08:00 - 22:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">B栋 1楼 101</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">08:00 - 22:00</div></div>
+        <div class="info-item"><div class="info-label">备注</div><div class="info-value remark">大型会议室，配视频会议终端；配备：投影仪、视频会议、电视、音响</div></div>
+      </div>
+    </div>
+
+    <div class="panel s">
+      <div class="tag">② 方案 S · 备注堆叠（已实现）</div>
+      <div class="hero"><div class="room-name">多功能厅</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 20 人</div><div class="hero-hours">开放 08:00 - 22:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">B栋 1楼 101</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">08:00 - 22:00</div></div>
+        <div class="info-item is-block"><div class="info-label">备注</div><div class="info-value remark">大型会议室，配视频会议终端；配备：投影仪、视频会议、电视、音响</div></div>
+      </div>
+    </div>
+
+    <div class="panel s">
+      <div class="tag">③ 方案 S · 短备注</div>
+      <div class="hero"><div class="room-name">小会议室</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 6 人</div><div class="hero-hours">开放 09:00 - 18:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">A栋 3楼 302</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">09:00 - 18:00</div></div>
+        <div class="info-item is-block"><div class="info-label">备注</div><div class="info-value remark">需提前一天预约</div></div>
+      </div>
+    </div>
+
+    <div class="panel l">
+      <div class="tag">④ 方案 L · 单一左轴（体验侧主张）</div>
+      <div class="hero"><div class="room-name">多功能厅</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 20 人</div><div class="hero-hours">开放 08:00 - 22:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">B栋 1楼 101</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">08:00 - 22:00</div></div>
+        <div class="info-item"><div class="info-label">备注</div><div class="info-value remark">大型会议室，配视频会议终端；配备：投影仪、视频会议、电视、音响</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel l">
+      <div class="tag">⑤ 方案 L · 短备注</div>
+      <div class="hero"><div class="room-name">小会议室</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 6 人</div><div class="hero-hours">开放 09:00 - 18:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">A栋 3楼 302</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">09:00 - 18:00</div></div>
+        <div class="info-item"><div class="info-label">备注</div><div class="info-value remark">需提前一天预约</div></div>
+      </div>
+    </div>
+
+    <div class="panel l">
+      <div class="tag">⑥ 方案 L · 超长备注（6 行）</div>
+      <div class="hero"><div class="room-name">报告厅</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 120 人</div><div class="hero-hours">开放 08:00 - 22:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">C栋 2楼 201</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">08:00 - 22:00</div></div>
+        <div class="info-item"><div class="info-label">备注</div><div class="info-value remark">大型报告厅，配备双投影、无线麦克风与同声传译设备。
+使用前请提前 30 分钟到场调试设备，会后请关闭空调与灯光。
+如需使用讲台储物柜，请到前台登记领取钥匙。</div></div>
+      </div>
+    </div>
+
+    <div class="panel s">
+      <div class="tag">⑦ 方案 S · 超长备注（6 行）</div>
+      <div class="hero"><div class="room-name">报告厅</div>
+        <div class="hero-meta"><div class="capacity-pill">可容纳 120 人</div><div class="hero-hours">开放 08:00 - 22:00</div></div></div>
+      <div class="info-card">
+        <div class="info-item"><div class="info-label">位置</div><div class="info-value">C栋 2楼 201</div></div>
+        <div class="info-item"><div class="info-label">开放时间</div><div class="info-value">08:00 - 22:00</div></div>
+        <div class="info-item is-block"><div class="info-label">备注</div><div class="info-value remark">大型报告厅，配备双投影、无线麦克风与同声传译设备。
+使用前请提前 30 分钟到场调试设备，会后请关闭空调与灯光。
+如需使用讲台储物柜，请到前台登记领取钥匙。</div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

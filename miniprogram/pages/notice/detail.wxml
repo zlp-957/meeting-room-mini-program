@@ -1,0 +1,8 @@
+<view class="notice-detail">
+  <view class="detail-card">
+    <text class="title">{{notice.title}}</text>
+    <text class="time">{{notice.createTime}}</text>
+    <view class="divider"></view>
+    <text class="content">{{notice.content}}</text>
+  </view>
+</view>

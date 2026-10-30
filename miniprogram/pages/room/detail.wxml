@@ -1,0 +1,31 @@
+<view class="detail-page">
+  <!-- 顶部信息 -->
+  <view class="hero">
+    <text class="room-name">{{room.name}}</text>
+    <view class="hero-meta">
+      <text class="capacity-pill">可容纳 {{room.capacity}} 人</text>
+      <text class="hero-hours">开放 {{room.openTimeText}} - {{room.closeTimeText}}</text>
+    </view>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="info-card anim-item">
+    <view class="info-item">
+      <text class="info-label">位置</text>
+      <text class="info-value">{{room.location || '位置待定'}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">开放时间</text>
+      <text class="info-value">{{room.openTimeText}} - {{room.closeTimeText}}</text>
+    </view>
+    <view class="info-item is-block" wx:if="{{room.remark}}">
+      <text class="info-label">备注</text>
+      <text class="info-value remark">{{room.remark}}</text>
+    </view>
+  </view>
+
+  <!-- 预约按钮 -->
+  <view class="bottom-bar">
+    <view class="btn-primary" bindtap="goBooking" hover-class="btn-hover" hover-stay-time="80">立即预约</view>
+  </view>
+</view>

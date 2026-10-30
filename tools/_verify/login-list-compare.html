@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #eef1f6; padding: 16px; }
+  .row { display: flex; gap: 16px; }
+  .panel { width: 393px; height: 700px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, #ffffff 0%, #e3ecff 22%, #f0f5ff 50%, #f5f6f8 76%, #f5f6f8 100%);
+    display: flex; flex-direction: column; border-radius: 12px; box-shadow: 0 4px 18px rgba(15,23,42,.08); }
+  .tag { position: absolute; top: 10px; left: 10px; font-size: 11px; color: #fff; background: rgba(15,23,42,.55);
+    padding: 3px 8px; border-radius: 10px; z-index: 5; }
+  .axis { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: rgba(239,68,68,.4); z-index: 4; }
+
+  .brand { padding-top: 62px; display: flex; flex-direction: column; align-items: center; }
+  .logo { width: 69px; height: 69px; border-radius: 20px; position: relative;
+    background: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%); box-shadow: 0 9px 23px rgba(37,99,235,.32); }
+  .logo::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 52%;
+    background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0)); }
+  .logo-door { position: absolute; left: 50%; top: 27%; width: 43%; height: 51%; transform: translateX(-50%);
+    border: 2.6px solid #fff; border-bottom: none; border-radius: 50% 50% 0 0 / 40% 40% 0 0; }
+  .logo-knob { position: absolute; right: 37%; top: 60%; width: 3.7px; height: 3.7px; border-radius: 50%; background: #fff; }
+  .brand-name { margin-top: 19px; font-size: 24px; font-weight: 700; color: #111827; }
+  .brand-sub { margin-top: 7px; font-size: 13.6px; color: #8a94a6; }
+
+  .feature-item { display: flex; align-items: center; margin-bottom: 17px; }
+  .feature-item:last-child { margin-bottom: 0; }
+  .feature-dot { width: 29px; height: 29px; border-radius: 8px; background: #fff;
+    box-shadow: 0 2px 7px rgba(37,99,235,.10); display: flex; align-items: center; justify-content: center;
+    font-size: 15px; margin-right: 10px; flex-shrink: 0; }
+  .feature-text { font-size: 13.6px; color: #6b7280; line-height: 1.6; }
+
+  /* 改前：左右各 72rpx(38px) 边距，整块铺满，行内左对齐 */
+  .feature-list.before { margin: 40px 38px 0; }
+
+  /* 改后：整块收缩并居中，行内左对齐 */
+  .feature-list.after { align-self: center; display: flex; flex-direction: column; align-items: flex-start;
+    margin-top: 40px; max-width: calc(100% - 50px); }
+
+  .login-footer { margin-top: auto; padding: 0 29px 34px; }
+  .login-btn { height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%); color: #fff; font-size: 17px; font-weight: 500;
+    box-shadow: 0 6px 15px rgba(37,99,235,.26); }
+  .agreement { margin-top: 15px; text-align: center; font-size: 11.5px; color: #9aa3b2; }
+  .link { color: #4b7fe8; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="panel">
+      <div class="tag">改前：整块铺满 + 右边缘参差</div>
+      <div class="axis"></div>
+      <div class="brand"><div class="logo"><div class="logo-door"></div><div class="logo-knob"></div></div>
+        <div class="brand-name">会议室预约</div><div class="brand-sub">预订更简单，开会更从容</div></div>
+      <div class="feature-list before">
+        <div class="feature-item"><div class="feature-dot">🕐</div><div class="feature-text">实时查看每间会议室的空闲时段</div></div>
+        <div class="feature-item"><div class="feature-dot">📋</div><div class="feature-text">在线预约，审批进度随时可查</div></div>
+        <div class="feature-item"><div class="feature-dot">📍</div><div class="feature-text">到点签到，让资源不被浪费</div></div>
+      </div>
+      <div class="login-footer"><div class="login-btn">微信一键登录</div>
+        <div class="agreement">登录即代表同意 <span class="link">《用户协议》</span> 和 <span class="link">《隐私政策》</span></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="tag">改后：整块居中，左右留白对称</div>
+      <div class="axis"></div>
+      <div class="brand"><div class="logo"><div class="logo-door"></div><div class="logo-knob"></div></div>
+        <div class="brand-name">会议室预约</div><div class="brand-sub">预订更简单，开会更从容</div></div>
+      <div class="feature-list after">
+        <div class="feature-item"><div class="feature-dot">🕐</div><div class="feature-text">实时查看每间会议室的空闲时段</div></div>
+        <div class="feature-item"><div class="feature-dot">📋</div><div class="feature-text">在线预约，审批进度随时可查</div></div>
+        <div class="feature-item"><div class="feature-dot">📍</div><div class="feature-text">到点签到，让资源不被浪费</div></div>
+      </div>
+      <div class="login-footer"><div class="login-btn">微信一键登录</div>
+        <div class="agreement">登录即代表同意 <span class="link">《用户协议》</span> 和 <span class="link">《隐私政策》</span></div></div>
+    </div>
+  </div>
+</body>
+</html>

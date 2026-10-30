@@ -1,0 +1,124 @@
+<view class="mine-page">
+  <!-- 用户信息 -->
+  <view class="profile">
+    <view class="avatar-wrap" bindtap="changeAvatar" hover-class="avatar-hover">
+      <image wx:if="{{avatarUrl}}" class="avatar-img" src="{{avatarUrl}}" mode="aspectFill" binderror="onAvatarError" />
+      <view wx:else class="avatar">{{avatarText}}</view>
+      <view class="avatar-edit">
+        <text wx:if="{{uploadingAvatar}}" class="avatar-edit-loading"></text>
+        <text wx:else class="avatar-edit-icon">＋</text>
+      </view>
+    </view>
+    <view class="profile-main">
+      <view class="name-line" bindtap="openNickDialog" hover-class="name-line-hover">
+        <text class="name">{{userInfo.nickname || '微信用户'}}</text>
+        <text class="name-edit">✎</text>
+      </view>
+      <view class="phone-line">
+        <text class="phone">{{userInfo.phone ? maskPhone : '未绑定手机号'}}</text>
+        <text wx:if="{{userInfo.phone}}" class="tag-ok">已绑定</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 手机号绑定引导（未绑定时展示绑定卡片；已绑定时展示修改入口） -->
+  <view wx:if="{{!userInfo.phone}}" class="bind-card">
+    <view class="bind-text">
+      <text class="bind-title">绑定手机号</text>
+      <text class="bind-desc">仅用于资料展示与联系，一个手机号仅可绑定一个账号</text>
+    </view>
+    <view class="bind-btn {{binding ? 'is-disabled' : ''}}" hover-class="btn-hover" bindtap="openBindDialog">
+      <view wx:if="{{binding}}" class="btn-spinner"></view>
+      <text>{{binding ? '处理中' : '去绑定'}}</text>
+    </view>
+  </view>
+
+  <view class="cell-group">
+    <view class="cell" bindtap="openNickDialog" hover-class="cell-hover">
+      <text class="cell-label">修改昵称</text>
+      <view class="cell-right">
+        <text class="cell-value">{{userInfo.nickname || '未设置'}}</text>
+        <text class="cell-arrow">›</text>
+      </view>
+    </view>
+    <view class="cell" bindtap="changeAvatar" hover-class="cell-hover">
+      <text class="cell-label">修改头像</text>
+      <view class="cell-right">
+        <image wx:if="{{avatarUrl}}" class="cell-avatar" src="{{avatarUrl}}" mode="aspectFill" />
+        <text class="cell-arrow">›</text>
+      </view>
+    </view>
+    <view wx:if="{{userInfo.phone}}" class="cell" bindtap="openBindDialog" hover-class="cell-hover">
+      <text class="cell-label">修改手机号</text>
+      <text class="cell-arrow">›</text>
+    </view>
+    <view class="cell" bindtap="goNotification" hover-class="cell-hover">
+      <text class="cell-label">通知</text>
+      <view class="cell-right">
+        <text class="cell-badge" wx:if="{{unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+        <text class="cell-arrow">›</text>
+      </view>
+    </view>
+    <view class="cell" bindtap="goNotice" hover-class="cell-hover">
+      <text class="cell-label">公告</text>
+      <text class="cell-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="cell-group">
+    <view class="cell" bindtap="logout" hover-class="cell-hover">
+      <text class="cell-label">退出登录</text>
+      <text class="cell-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 昵称输入弹窗 -->
+  <view class="dialog-mask" wx:if="{{showNickDialog}}" bindtap="closeNickDialog">
+    <view class="dialog" catchtap="noop">
+      <text class="dialog-title">修改昵称</text>
+      <input
+        class="dialog-input"
+        type="nickname"
+        maxlength="20"
+        value="{{nicknameInput}}"
+        placeholder="请输入 2-20 个字符"
+        placeholder-class="dialog-input-ph"
+        bindinput="onNicknameInput"
+      />
+      <text class="dialog-hint">仅支持中文、字母、数字、下划线、连字符和空格，请勿使用不雅或仿冒官方字样</text>
+      <view class="dialog-actions">
+        <view class="dialog-btn cancel" hover-class="dialog-btn-hover" bindtap="closeNickDialog">取消</view>
+        <view class="dialog-btn confirm {{savingNick ? 'is-disabled' : ''}}" hover-class="dialog-btn-hover" bindtap="submitNickname">
+          <view wx:if="{{savingNick}}" class="btn-spinner"></view>
+          <text>{{savingNick ? '提交中' : '确定'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 手机号输入弹窗：只填号码，不做验证（手机号不是登录凭据） -->
+  <view class="dialog-mask" wx:if="{{showBindDialog}}" bindtap="closeBindDialog">
+    <view class="dialog" catchtap="noop">
+      <text class="dialog-title">{{userInfo.phone ? '修改手机号' : '绑定手机号'}}</text>
+      <input
+        class="dialog-input"
+        type="number"
+        maxlength="11"
+        value="{{phoneInput}}"
+        placeholder="请输入11位手机号"
+        placeholder-class="dialog-input-ph"
+        bindinput="onPhoneInput"
+      />
+      <text class="dialog-hint">手机号仅用于展示与联系，不作为登录方式。</text>
+      <view class="dialog-actions">
+        <view class="dialog-btn cancel" hover-class="dialog-btn-hover" bindtap="closeBindDialog">取消</view>
+        <view class="dialog-btn confirm {{binding ? 'is-disabled' : ''}}" hover-class="dialog-btn-hover" bindtap="submitBind">
+          <view wx:if="{{binding}}" class="btn-spinner"></view>
+          <text>{{binding ? '提交中' : '确定'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="version">会议室预约 V1.0</view>
+</view>

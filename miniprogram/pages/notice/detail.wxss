@@ -1,0 +1,42 @@
+.notice-detail {
+  min-height: 100vh;
+  background: #f5f6f8;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.detail-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 44rpx 34rpx;
+  box-shadow: var(--shadow-card);
+  animation: fadeInUp 0.4s ease;
+}
+
+.title {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #111827;
+  display: block;
+  line-height: 1.4;
+}
+
+.time {
+  font-size: 24rpx;
+  color: #9ca3af;
+  margin-top: 16rpx;
+  display: block;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, #eef1f5, #f7f8fa);
+  margin: 30rpx 0;
+}
+
+.content {
+  font-size: 30rpx;
+  color: #4b5563;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}

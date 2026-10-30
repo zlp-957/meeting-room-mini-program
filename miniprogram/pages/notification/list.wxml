@@ -1,0 +1,39 @@
+<view class="notify-page">
+  <view class="notify-head">
+    <view class="notify-head-text">
+      <text class="notify-head-title">我的通知</text>
+      <text class="notify-head-sub">预约提醒、违约与权限变更通知</text>
+    </view>
+    <view class="notify-read-all" bindtap="readAll">全部已读</view>
+  </view>
+
+  <view class="notify-list">
+    <view
+      class="notify-card {{item.isRead === 1 ? 'read' : ''}}"
+      wx:for="{{list}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      data-index="{{index}}"
+      bindtap="onRead"
+      hover-class="card-hover"
+    >
+      <view class="notify-dot" wx:if="{{item.isRead !== 1}}"></view>
+      <view class="notify-main">
+        <view class="notify-top">
+          <text class="notify-type type-{{item.type}}">{{item.typeText}}</text>
+          <text class="notify-time">{{item.createTime}}</text>
+        </view>
+        <view class="notify-title">{{item.title}}</view>
+        <view class="notify-content" wx:if="{{item.content}}">{{item.content}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && list.length === 0}}" class="empty">
+      <text class="empty-icon">🔔</text>
+      <text class="empty-text">暂无通知</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:if="{{!hasMore && list.length > 0}}" class="loading">没有更多了</view>
+  </view>
+</view>

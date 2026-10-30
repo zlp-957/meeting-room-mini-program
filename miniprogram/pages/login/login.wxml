@@ -1,0 +1,40 @@
+<view class="login-page">
+  <view class="brand">
+    <view class="logo" bindlongpress="editServer">
+      <view class="logo-door"></view>
+      <view class="logo-knob"></view>
+    </view>
+    <text class="brand-name">会议室预约</text>
+    <text class="brand-sub">预订更简单，开会更从容</text>
+  </view>
+
+  <view class="feature-list">
+    <view class="feature-item" style="animation-delay: {{item.delay}}ms;" wx:for="{{features}}" wx:key="text">
+      <view class="feature-dot">{{item.icon}}</view>
+      <text class="feature-text">{{item.text}}</text>
+    </view>
+  </view>
+
+  <view class="login-footer">
+    <view
+      class="login-btn {{loading ? 'is-loading' : ''}}"
+      bindtap="handleWxLogin"
+      hover-class="login-btn-hover"
+      hover-stay-time="80"
+    >
+      <view wx:if="{{loading}}" class="btn-spinner"></view>
+      <text>{{loading ? '登录中…' : '微信一键登录'}}</text>
+    </view>
+
+
+    <view class="agreement">
+      <text>登录即代表同意</text>
+      <text class="link">《用户协议》</text>
+      <text>和</text>
+      <text class="link">《隐私政策》</text>
+    </view>
+
+    <text wx:if="{{devEnv}}" class="dev-hint">服务地址：{{baseUrl}}（长按上方 Logo 可修改）</text>
+  </view>
+
+</view>

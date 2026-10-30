@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="81" viewBox="0 0 24 24">
+  <!-- 选中态：整张票填实，对勾与撕缝反白（镂空 = 透明，仍是单色）
+       撕缝带 x 13.7..16.3（宽 2.6 = 27px 下 2.9px），只贯穿票体内区 y 7..17，不切断上下边框 -->
+  <mask id="ticket-knockout" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+    <rect x="2" y="5" width="20" height="14" rx="3.5" fill="#ffffff"/>
+    <path d="M6.3 11.6L8.5 13.8L11.8 10.3" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="13.7" y="7" width="2.6" height="10" fill="#000000"/>
+  </mask>
+  <rect x="3" y="6" width="18" height="12" rx="2.5" fill="#2563eb" stroke="#2563eb" stroke-width="2" mask="url(#ticket-knockout)"/>
+</svg>

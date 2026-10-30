@@ -1,0 +1,579 @@
+.booking-page {
+  min-height: 100vh;
+  padding-bottom: 160rpx;
+  background: #f5f6f8;
+}
+
+/* ===== 顶部会议室渐变头 ===== */
+.room-head {
+  padding: 40rpx 40rpx 80rpx;
+  background: linear-gradient(180deg, #2563eb 0%, #2258dd 55%, #1d4ed8 100%);
+  border-radius: 0 0 40rpx 40rpx;
+  margin-bottom: -48rpx;
+}
+
+.room-head-name {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #ffffff;
+  animation: fadeInUp 0.4s ease;
+}
+
+.room-head-hint {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.88);
+  animation: fadeInUp 0.4s ease 0.08s both;
+}
+
+/* 编辑模式：房间名 + 「更换 ›」并排，整行可点 */
+.room-head-picker {
+  display: flex;
+  align-items: center;
+  animation: fadeInUp 0.4s ease;
+}
+
+.room-head-picker .room-head-name {
+  animation: none;
+}
+
+.room-head-switch {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.16);
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+/* 编辑模式提示条：在渐变头下方、内容卡片之上 */
+.edit-tip {
+  margin: 68rpx 32rpx 0;
+  padding: 18rpx 22rpx;
+  font-size: 23rpx;
+  line-height: 1.5;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 14rpx;
+  animation: fadeInUp 0.4s ease 0.06s both;
+}
+
+/* 卡片内边距比全局 30rpx 再松一点：这张卡信息密度高，四周不留白会顶得慌 */
+.booking-page .card {
+  padding: 36rpx 34rpx 40rpx;
+  animation: fadeInUp 0.45s ease 0.1s both;
+}
+
+/* 三个小节之间的呼吸：52rpx 是「标题下 26rpx」的两倍，分组一眼分得开 */
+.section {
+  margin-top: 52rpx;
+}
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.section-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+/* 小节标题行：左标题 + 右侧时长胶囊（做成 pill，否则蓝色小字浮在右边像没对齐） */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 26rpx;
+}
+.section-head .section-label {
+  margin-bottom: 0;
+}
+.section-value {
+  font-size: 22rpx;
+  line-height: 1;
+  color: #2563eb;
+  background: #eef4ff;
+  border-radius: 8rpx;
+  padding: 6rpx 12rpx;
+}
+
+/* ===== 预约日期 · 横排日期卡 =====
+   一屏 5 张：卡片宽由 calc 算出（(内宽 - 4×16rpx) / 5），第 5 张正好贴到内边距、不会越界。
+   间距 12→16rpx、卡高 132→144rpx：原来的 5 张像「挤在一格里」，放大后半张卡呼吸更足。
+   日期写「10.29」而不是「10月29日」，同样宽度下能多显示两天。 */
+
+.date-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+/* scroll-view 横向滚动 + flex 子元素的兼容写法：
+   行容器用 inline-flex（宽度由内容撑开，不依赖父级百分比），
+   卡片用固定 rpx 宽度。原来用 flex-basis: calc((100% - 64rpx)/5)，
+   在 scroll-view 的内容宽度不确定时百分比会失去参照，真机上曾出现整排卡片宽度塌成 0
+   （开发者工具里看不出来）。rpx 本身就跟屏宽等比，写死也不会影响适配。 */
+.date-row {
+  display: inline-flex;
+  padding: 4rpx 0;
+}
+
+/* 123rpx × 5 + 16rpx × 4 = 679rpx ≈ 卡片内宽（750 - 34 × 2 = 682），第 5 张正好贴到内边距 */
+.date-card {
+  flex: 0 0 123rpx;
+  width: 123rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 144rpx;
+  margin-right: 16rpx;
+  border-radius: 14rpx;
+  box-sizing: border-box;
+  background: #f4f6f9;
+  /* 边框常驻（透明）而不是选中时才加，否则选中那下卡片会抖 2rpx */
+  border: 2rpx solid transparent;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.date-card:last-child {
+  margin-right: 0;
+}
+
+/* 日期条为空时的兜底提示（onLoad 没跑完才会出现） */
+.date-empty {
+  padding: 24rpx 0 8rpx;
+  font-size: 24rpx;
+  color: #98a2b3;
+}
+
+.dc-md {
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
+}
+
+.dc-week {
+  margin-top: 5rpx;
+  font-size: 20rpx;
+  line-height: 1.2;
+  color: #98a2b3;
+}
+
+.date-card.on {
+  background: #ffffff;
+  border-color: #2563eb;
+}
+
+.date-card.on .dc-md,
+.date-card.on .dc-week {
+  color: #2563eb;
+}
+
+.date-card-hover {
+  background: #eceff4;
+}
+
+/* ===== 时间段 · 起止时间框 ===== */
+
+.time-row {
+  display: flex;
+  align-items: center;
+}
+
+.time-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 92rpx;
+  border-radius: 14rpx;
+  background: #f7f9fc;
+  border: 2rpx solid #e8ecf3;
+  box-sizing: border-box;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+/* 正在滚的那一格才描蓝，松手确定后两个框回到同位 —— 一眼能看出「在改哪个」 */
+.time-box.on {
+  background: #ffffff;
+  border-color: #2563eb;
+}
+
+.time-box-hover {
+  background: #eff3fa;
+}
+
+.tb-time {
+  font-size: 38rpx;
+  font-weight: 600;
+  line-height: 1;
+  color: #101828;
+  letter-spacing: 1rpx;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-box.on .tb-time {
+  color: #2563eb;
+}
+
+/* 用 CSS 画三角而不是 ▾ 字符：字符在部分机型上会被渲染成极小的点 */
+.tb-caret {
+  width: 0;
+  height: 0;
+  margin-left: 12rpx;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  border-top: 10rpx solid #aab2c0;
+}
+
+.time-to {
+  flex-shrink: 0;
+  width: 64rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #98a2b3;
+}
+
+/* ===== 概览条 · 全天 24 小时 =====
+   只做展示：营业外极浅底、营业内淡灰、已占深灰、已选浅蓝。
+   位置全部用百分比，屏幕多宽都对得上刻度。 */
+
+.ov {
+  margin-top: 30rpx;
+}
+
+/**
+ * 概览条配色：四档必须拉开明度，否则用户得盯着看才分得出哪段能约。
+ * 非营业 中性灰 / 可约 绿 / 已占 深灰蓝 / 已选 品牌蓝 —— 绿与蓝是两种色相，
+ * 「能约」和「已选」不会混，比原来的三档浅灰蓝强很多。
+ */
+.ov-track {
+  position: relative;
+  height: 40rpx;
+  border-radius: 10rpx;
+  background: #e9edf4;
+  overflow: hidden;
+  /* 非营业色很浅，靠一圈内描边把轨道边界画出来，否则条会「消失」在白卡里 */
+  box-shadow: inset 0 0 0 1rpx rgba(17, 24, 39, 0.07);
+}
+
+.ov-biz {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #8ed3a9;
+}
+
+.ov-occ {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #7e8a9d;
+}
+
+.ov-sel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #2f6fed;
+}
+
+/**
+ * 刻度：一小时一条，等长、垂直居中，不碰上下边。
+ * 线色跟底色走：营业/已占/已选段是中深底 → 白线；非营业段是浅灰底 → 灰线。
+ * 24 根线铺在 313px 上每根间隔 13px，已经是「栅栏」的临界点，
+ * 所以非营业段的灰线压到 .40 —— 只留一点刻度感，不跟数字抢注意力。
+ */
+.ov-mark {
+  position: absolute;
+  top: 50%;
+  width: 1rpx;
+  height: 14rpx;
+  background: rgba(255, 255, 255, 0.88);
+  transform: translate(-50%, -50%);
+}
+
+.ov-mark.is-mute {
+  background: rgba(108, 120, 140, 0.4);
+}
+
+.ov-labels {
+  position: relative;
+  height: 44rpx;
+  margin-top: 14rpx;
+}
+
+.ov-label {
+  position: absolute;
+  top: 0;
+  font-size: 20rpx;
+  line-height: 24rpx;
+  color: #6c7486;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* 24 点写成竖排两行，落在 22 右侧的空档里。
+   不能用负 right：卡片圆角一裁就整块消失（真机上踩过）。 */
+.ov-label.is-tomorrow {
+  right: 0;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 18rpx;
+  line-height: 19rpx;
+  color: #9aa3b2;
+}
+
+/* 图例：四项左对齐，间距固定。
+   「可预约」是三个字、另三项是两三个字，宽度不一 —— 用 space-between 会把它们
+   拉成四种不等的间距，看着像没对齐；改成左起顺序排，间距一律 36rpx。 */
+.ov-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 26rpx;
+}
+
+.lg {
+  display: flex;
+  align-items: center;
+}
+
+/* 间距只加在「第二项起」，末项右侧不留多余边距 */
+.lg + .lg {
+  margin-left: 36rpx;
+}
+
+.lg-sw {
+  width: 20rpx;
+  height: 14rpx;
+  border-radius: 3rpx;
+  margin-right: 8rpx;
+}
+
+.lg-sw.is-occ {
+  background: #7e8a9d;
+}
+.lg-sw.is-free {
+  background: #8ed3a9;
+}
+.lg-sw.is-sel {
+  background: #2f6fed;
+}
+.lg-sw.is-off {
+  background: #e9edf4;
+  box-sizing: border-box;
+  border: 1rpx solid #dae0ea;
+}
+
+/* 四项文字同色：深浅不一会让图例看起来「没对齐」，区隔靠色块本身足够 */
+.lg-tx {
+  font-size: 22rpx;
+  color: #5b6577;
+}
+.lg-tx.is-dim {
+  color: #5b6577;
+}
+
+/* 当日无可用时段 */
+.empty-slots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18rpx;
+  padding: 40rpx 20rpx;
+  background: #f7f9fc;
+  border-radius: 16rpx;
+}
+.empty-slots-title {
+  font-size: 27rpx;
+  font-weight: 600;
+  color: #4b5563;
+}
+.empty-slots-sub {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #9aa3b2;
+}
+
+/* ===== 时分滚轮弹层 ===== */
+
+.pk-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  background: rgba(17, 24, 39, 0.42);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.24s ease, visibility 0.24s ease;
+}
+
+.pk-mask.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pk-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 901;
+  padding: 12rpx 32rpx 24rpx;
+  padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  border-radius: 32rpx 32rpx 0 0;
+  box-shadow: 0 -12rpx 48rpx rgba(17, 24, 39, 0.14);
+  transform: translateY(102%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.pk-sheet.open {
+  transform: translateY(0);
+}
+
+.pk-grab {
+  width: 72rpx;
+  height: 8rpx;
+  margin: 0 auto;
+  border-radius: 4rpx;
+  background: #e3e8ef;
+}
+
+.pk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 4rpx 8rpx;
+}
+
+.pk-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #101828;
+}
+
+.pk-range {
+  font-size: 21rpx;
+  color: #aab2c0;
+}
+
+/* 高度必须 = 行高 × 奇数行（80rpx × 5 = 400rpx），否则选中行不在正中 */
+.pk-view {
+  width: 100%;
+  height: 400rpx;
+}
+
+.pk-item {
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 40rpx;
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 选中行变蓝：picker-view 的 indicator 改不了字色，只能给节点加 class。
+   代价是滚动过程中不变色，停下来才变（原生 App 才做得到实时）。 */
+.pk-item.on {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* indicator 只能靠 class 改样式；background 无效，只画上下两条线 */
+.pk-indicator {
+  height: 80rpx;
+  border-top: 1rpx solid #e4e9f0;
+  border-bottom: 1rpx solid #e4e9f0;
+}
+
+.pk-foot {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.pk-cancel,
+.pk-ok {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.pk-cancel {
+  width: 200rpx;
+  margin-right: 20rpx;
+  color: #5b6472;
+  background: #f4f6f9;
+}
+
+.pk-ok {
+  flex: 1;
+  color: #ffffff;
+  background: var(--brand-gradient);
+  box-shadow: 0 8rpx 22rpx rgba(37, 99, 235, 0.26);
+}
+
+.pk-btn-hover {
+  opacity: 0.88;
+}
+
+/* 和时间框同一套：同高 92rpx、同圆角、同底同边，跨卡也能认出是同一类控件 */
+.subject-input {
+  width: 100%;
+  height: 92rpx;
+  box-sizing: border-box;
+  padding: 0 24rpx;
+  background: #f7f9fc;
+  border: 2rpx solid #e8ecf3;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  line-height: 92rpx;
+  color: #1f2937;
+}
+.subject-ph {
+  color: #c0c6d0;
+}
+
+.bottom-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  box-shadow: 0 -4rpx 20rpx rgba(17, 24, 39, 0.06);
+}
+
+.bottom-btn .btn-primary {
+  width: 100%;
+  height: 92rpx;
+  border-radius: 46rpx;
+  font-size: 31rpx;
+}
+
+.btn-disabled {
+  background: #dfe3e9 !important;
+  color: #9aa3b2 !important;
+  box-shadow: none !important;
+}

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; animation: none !important; }
+/* ===== 全局公共样式 · 简约现代风 ===== */
+body {
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-light: #eef4ff;
+  --brand-gradient: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%);
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --text-muted: #9aa3b2;
+  --line: #eef1f5;
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-card: 0 2px 12px rgba(17, 24, 39, 0.05);
+  --shadow-float: 0 6px 16px rgba(37, 99, 235, 0.18);
+
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 通用动画关键帧 ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  margin: 10px 16px;
+  box-shadow: var(--shadow-card);
+}
+
+/* 主按钮：用 view 实现，规避微信 button 默认 width:184px 的限制 */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 500;
+  height: 44px;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-float);
+}
+.btn-primary::after { border: none; }
+
+/* 统一按压反馈（配合 hover-class 使用） */
+.btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* 通用加载转圈（view 按钮无法使用 loading 属性） */
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  margin-right: 6px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  animation: btnSpin 0.7s linear infinite;
+}
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* 徽章 */
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-pending { background: #fef3e2; color: #b45309; }
+.badge-approved { background: #e6f4ee; color: #15803d; }
+.badge-rejected { background: #fdeaea; color: #b91c1c; }
+.badge-canceled { background: #eef2f6; color: #64748b; }
+.badge-violated { background: #f1edfa; color: #6d28d9; }
+
+/* 文本省略 */
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 空状态通用 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 70px 0;
+  animation: fadeIn 0.5s ease;
+}
+.empty-icon {
+  font-size: 44px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+.empty-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ===== 骨架屏通用 ===== */
+.skeleton-block {
+  background: linear-gradient(90deg, #f0f2f5 25%, #e6e9ee 37%, #f0f2f5 63%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+.mine-body {
+  min-height: 100vh;
+  background: #f5f6f8;
+  padding-bottom: 30px;
+}
+
+/* ===== 用户信息 ===== */
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 28px 20px 40px;
+  background: linear-gradient(180deg, #2563eb 0%, #2258dd 55%, #1d4ed8 100%);
+  border-radius: 0 0 20px 20px;
+}
+
+/* 头像容器：点击可换头像，右下角带编辑角标 */
+.avatar-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+.avatar-wrap.avatar-hover {
+  opacity: 0.85;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 12px rgba(29, 78, 216, 0.28);
+  box-sizing: border-box;
+}
+
+.avatar-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 5px 12px rgba(29, 78, 216, 0.28);
+  display: block;
+}
+
+.avatar-edit {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #dbe4f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(29, 78, 216, 0.18);
+}
+
+.avatar-edit-icon {
+  font-size: 12px;
+  line-height: 1;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.avatar-edit-loading {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid #dbe4f3;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: btnSpin 0.7s linear infinite;
+}
+
+.profile-main {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 昵称一行：点击可改名 */
+.name-line {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  max-width: 100%;
+}
+.name-line.name-line-hover {
+  opacity: 0.8;
+}
+
+.name {
+  font-size: 19px;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 190px;
+}
+
+.name-edit {
+  margin-left: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  flex-shrink: 0;
+}
+
+.phone-line {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.phone {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.tag-ok {
+  margin-left: 7px;
+  font-size: 10px;
+  color: #15803d;
+  background: #ffffff;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* ===== 绑定提示卡 ===== */
+.bind-card {
+  display: flex;
+  align-items: center;
+  margin: -20px 16px 0;
+  padding: 14px 14px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+  animation: fadeInUp 0.4s ease;
+}
+
+.bind-text {
+  flex: 1;
+  overflow: hidden;
+}
+
+.bind-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.bind-desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9aa3b2;
+  line-height: 1.5;
+}
+
+/* 用 view 实现，规避微信 button 默认 width:184px 的撑宽问题 */
+.bind-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  height: 30px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  margin-left: 10px;
+  border-radius: 15px;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  font-size: 12.5px;
+  line-height: 1;
+  box-shadow: 0 3px 7px rgba(37, 99, 235, 0.22);
+}
+.bind-btn.is-disabled {
+  opacity: 0.65;
+  box-shadow: none;
+}
+.bind-btn .btn-spinner {
+  width: 12px;
+  height: 12px;
+  border-width: 1px;
+  margin-right: 4px;
+}
+
+/* ===== 菜单 ===== */
+.cell-group {
+  margin: 12px 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 14px;
+}
+
+.cell + .cell {
+  border-top: 0.5px solid #f2f4f7;
+}
+
+.cell-hover {
+  background: #fafbfc;
+}
+
+.cell-label {
+  flex: 1;
+  font-size: 14.5px;
+  color: #1f2937;
+}
+
+.cell-arrow {
+  font-size: 17px;
+  color: #cfd5de;
+}
+
+.cell-right {
+  display: flex;
+  align-items: center;
+}
+
+.cell-badge {
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  text-align: center;
+  margin-right: 5px;
+}
+
+/* 右侧展示当前值（昵称） */
+.cell-value {
+  font-size: 13px;
+  color: #9aa3b2;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 5px;
+}
+
+/* 右侧展示当前头像缩略图 */
+.cell-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background: #f2f4f7;
+  display: block;
+}
+
+.version {
+  text-align: center;
+  font-size: 11px;
+  color: #c3c9d4;
+  margin-top: 28px;
+}
+
+/* ===== 手机号输入弹窗 ===== */
+.dialog-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(17, 24, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.dialog {
+  width: 300px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 16px 16px;
+  box-sizing: border-box;
+}
+
+.dialog-title {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.dialog-input {
+  height: 44px;
+  background: #f5f6f8;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 15px;
+  color: #111827;
+}
+
+.dialog-input-ph {
+  color: #c3c9d4;
+}
+
+.dialog-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #9aa3b2;
+}
+
+.dialog-actions {
+  display: flex;
+  margin-top: 16px;
+}
+
+.dialog-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  font-size: 14px;
+  border-radius: 19px;
+  box-sizing: border-box;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.dialog-btn-hover {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.dialog-btn .btn-spinner {
+  width: 12px;
+  height: 12px;
+  border-width: 1px;
+  margin-right: 4px;
+}
+
+.dialog-btn.cancel {
+  background: #f2f4f7;
+  color: #4b5563;
+  margin-right: 10px;
+}
+
+.dialog-btn.confirm {
+  background: var(--brand-gradient);
+  color: #ffffff;
+}
+
+.dialog-btn.is-disabled {
+  opacity: 0.7;
+}
+
+body { width: 375px; background: #f5f7fa; }
+.avatar { background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff;
+          display: flex; align-items: center; justify-content: center; }
+.cell-avatar { display: inline-block; }
+</style></head><body><div class="mine-page">
+  <div class="profile">
+    <div class="avatar-wrap">
+      <div class="avatar">玖</div>
+      <div class="avatar-edit"><span class="avatar-edit-icon">＋</span></div>
+    </div>
+    <div class="profile-main">
+      <div class="name-line"><span class="name">玖伍柒</span><span class="name-edit">✎</span></div>
+      <div class="phone-line"><span class="phone">138****8888</span><span class="tag-ok">已绑定</span></div>
+    </div>
+  </div>
+
+  <div class="cell-group">
+    <div class="cell"><span class="cell-label">修改昵称</span><span class="cell-value">玖伍柒</span><span class="cell-arrow">›</span></div>
+    <div class="cell"><span class="cell-label">修改头像</span><span class="cell-avatar" style="background:#f0d9cf"></span><span class="cell-arrow">›</span></div>
+    <div class="cell"><span class="cell-label">修改手机号</span><span class="cell-arrow">›</span></div>
+    <div class="cell"><span class="cell-label">通知</span><span class="cell-badge">3</span><span class="cell-arrow">›</span></div>
+    <div class="cell"><span class="cell-label">公告</span><span class="cell-arrow">›</span></div>
+  </div>
+
+  <div class="cell-group">
+    <div class="cell"><span class="cell-label">退出登录</span><span class="cell-arrow">›</span></div>
+  </div>
+
+  <div class="version">会议室预约 V1.0</div>
+</div></body></html>

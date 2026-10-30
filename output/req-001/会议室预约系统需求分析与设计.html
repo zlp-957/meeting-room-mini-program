@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会议室预约系统 · 需求分析与系统设计</title>
+<style>
+  :root {
+    --bg: #f3f5f9;
+    --card: #ffffff;
+    --ink: #1a2233;
+    --muted: #64748b;
+    --line: #e8ecf3;
+    --primary: #3b82f6;
+    --primary-strong: #2563eb;
+    --primary-soft: #eff6ff;
+    --green: #10b981;
+    --green-soft: #ecfdf5;
+    --amber: #f59e0b;
+    --amber-soft: #fffbeb;
+    --red: #ef4444;
+    --red-soft: #fef2f2;
+    --purple: #8b5cf6;
+    --purple-soft: #f5f3ff;
+    --cyan: #06b6d4;
+    --cyan-soft: #ecfeff;
+    --shadow: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+    --shadow-lg: 0 8px 24px rgba(16,24,40,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ===== 侧边导航 ===== */
+  aside {
+    width: 270px;
+    background: linear-gradient(180deg, #0f172a, #1e293b);
+    color: #cbd5e1;
+    padding: 32px 0 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  aside .brand {
+    padding: 0 26px 24px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    margin-bottom: 18px;
+  }
+  aside .brand .logo {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 18px; font-weight: 700; color: #fff;
+  }
+  aside .brand .logo .mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; font-weight: 700;
+  }
+  aside .brand p { font-size: 12px; color: #64748b; margin-top: 8px; }
+  aside nav { flex: 1; }
+  aside nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 26px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    transition: all .18s;
+    position: relative;
+  }
+  aside nav a .ico {
+    width: 18px; height: 18px; flex-shrink: 0; opacity: .85;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  aside nav a:hover { background: rgba(255,255,255,.05); color: #e2e8f0; }
+  aside nav a.active {
+    background: rgba(59,130,246,.14);
+    color: #fff;
+    border-left-color: #3b82f6;
+  }
+  aside nav a.active .ico { opacity: 1; }
+  aside .foot { padding: 16px 26px 0; font-size: 12px; color: #475569; border-top: 1px solid rgba(255,255,255,.08); }
+
+  /* ===== 主内容 ===== */
+  main { flex: 1; max-width: 980px; margin: 0 auto; padding: 40px 40px 90px; }
+
+  .hero {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #7c3aed 100%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 50px 46px;
+    margin-bottom: 38px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .hero::after {
+    content: "";
+    position: absolute; right: -60px; top: -60px;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: rgba(255,255,255,.08);
+  }
+  .hero::before {
+    content: "";
+    position: absolute; right: 40px; bottom: -80px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(255,255,255,.06);
+  }
+  .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: .5px; position: relative; z-index: 1; }
+  .hero p { font-size: 15px; opacity: .92; position: relative; z-index: 1; }
+  .hero .tags { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; position: relative; z-index: 1; }
+  .hero .tag {
+    background: rgba(255,255,255,.16);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,.22);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  section { margin-bottom: 46px; }
+  .sec-head { margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .sec-head .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary); flex-shrink: 0;
+    box-shadow: 0 0 0 4px rgba(59,130,246,.15);
+  }
+  h2.sec { font-size: 21px; font-weight: 700; color: var(--ink); }
+  .sec-head .sub { font-size: 13px; color: var(--muted); margin-left: auto; }
+
+  h3 { font-size: 16px; font-weight: 700; margin: 24px 0 12px; color: #1f2937; }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px 26px;
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    transition: box-shadow .2s;
+  }
+  .card:hover { box-shadow: var(--shadow-lg); }
+  .card h4 {
+    font-size: 15px; font-weight: 700; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card h4 .em { color: var(--primary); }
+
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 720px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+  }
+  .stat.c-blue::before { background: var(--primary); }
+  .stat.c-green::before { background: var(--green); }
+  .stat.c-purple::before { background: var(--purple); }
+  .stat.c-amber::before { background: var(--amber); }
+  .stat .num { font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1.1; }
+  .stat .num .unit { font-size: 16px; font-weight: 600; color: var(--muted); }
+  .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 8px 0 4px;
+    background: #fff;
+  }
+  th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #475569;
+    font-size: 13px;
+    letter-spacing: .3px;
+  }
+  tbody tr { transition: background .12s; }
+  tbody tr:hover { background: #fafbff; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .b-green { background: var(--green-soft); color: #059669; }
+  .b-blue { background: var(--primary-soft); color: #2563eb; }
+  .b-amber { background: var(--amber-soft); color: #d97706; }
+  .b-red { background: var(--red-soft); color: #dc2626; }
+  .b-purple { background: var(--purple-soft); color: #7c3aed; }
+  .b-cyan { background: var(--cyan-soft); color: #0891b2; }
+  .method {
+    display: inline-block; min-width: 52px; text-align: center;
+    padding: 3px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px;
+  }
+  .m-get { background: var(--green-soft); color: #059669; }
+  .m-post { background: var(--primary-soft); color: #2563eb; }
+  .m-put { background: var(--amber-soft); color: #d97706; }
+  .m-del { background: var(--red-soft); color: #dc2626; }
+
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 16px 0; }
+  .flow .step {
+    background: var(--primary-soft);
+    color: var(--primary-strong);
+    border: 1px solid #bfdbfe;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+    min-width: 96px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .flow .step .sm { font-size: 11px; font-weight: 500; color: #6b7280; margin-top: 2px; }
+  .flow .arrow { align-self: center; color: #94a3b8; font-weight: 700; font-size: 18px; }
+
+  .arch { position: relative; padding: 6px 0; }
+  .arch-layer {
+    border: 2px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 10px 0;
+    background: linear-gradient(180deg, #fbfdff, #f5f9ff);
+    text-align: center;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .arch-layer.hl { border-color: #93c5fd; background: linear-gradient(180deg, #eff6ff, #e8f1ff); }
+  .arch-layer .t { font-weight: 700; color: #1e3a8a; font-size: 15px; }
+  .arch-layer .d { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .arch-down { text-align: center; color: #94a3b8; font-size: 16px; margin: 2px 0; line-height: 1.2; }
+
+  .callout {
+    border-left: 4px solid var(--primary);
+    background: var(--primary-soft);
+    padding: 14px 18px;
+    border-radius: 0 12px 12px 0;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  .callout.warn { border-color: var(--amber); background: var(--amber-soft); }
+  .callout.green { border-color: var(--green); background: var(--green-soft); }
+  .callout b { color: #1e3a8a; }
+  .callout.warn b { color: #b45309; }
+  .callout.green b { color: #047857; }
+
+  ul.feature { list-style: none; }
+  ul.feature li {
+    padding: 9px 0 9px 28px; position: relative; font-size: 14px;
+    border-bottom: 1px dashed var(--line);
+  }
+  ul.feature li:last-child { border-bottom: none; }
+  ul.feature li::before {
+    content: ""; position: absolute; left: 2px; top: 15px;
+    width: 9px; height: 9px; border-radius: 3px;
+    background: var(--primary);
+  }
+  ul.feature li b { color: #1f2937; }
+
+  .timeline { list-style: none; }
+  .timeline li { position: relative; padding: 0 0 22px 30px; }
+  .timeline li::before {
+    content: ""; position: absolute; left: 8px; top: 6px; bottom: -2px;
+    width: 2px; background: var(--line);
+  }
+  .timeline li:last-child::before { display: none; }
+  .timeline li::after {
+    content: ""; position: absolute; left: 2px; top: 5px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid #dbeafe;
+  }
+  .timeline li .p-title { font-weight: 700; font-size: 15px; color: #1f2937; }
+  .timeline li .p-desc { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  code {
+    background: #f1f5f9;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+    color: #be185d;
+  }
+  .muted { color: var(--muted); font-size: 13px; }
+
+  .scroll-top {
+    position: fixed; right: 28px; bottom: 28px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    border: none; cursor: pointer;
+    font-size: 20px; font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    display: none; align-items: center; justify-content: center;
+    z-index: 99;
+  }
+  .scroll-top:hover { background: var(--primary-strong); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside>
+    <div class="brand">
+      <div class="logo"><span class="mark">会</span>会议室预约系统</div>
+      <p>需求分析 · 系统设计 · 技术方案</p>
+    </div>
+    <nav>
+      <a href="#overview" class="active"><span class="ico">📊</span>项目概览</a>
+      <a href="#arch"><span class="ico">🏗️</span>系统架构</a>
+      <a href="#tech"><span class="ico">⚙️</span>技术栈</a>
+      <a href="#module"><span class="ico">🧩</span>功能模块</a>
+      <a href="#db"><span class="ico">🗄️</span>数据库设计</a>
+      <a href="#login"><span class="ico">🔐</span>登录流程</a>
+      <a href="#booking"><span class="ico">📅</span>预约流程</a>
+      <a href="#api"><span class="ico">🔌</span>接口清单</a>
+      <a href="#rule"><span class="ico">📐</span>业务规则</a>
+      <a href="#plan"><span class="ico">🚀</span>开发计划</a>
+    </nav>
+    <div class="foot">V1.0 · 2026.10</div>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <h1>会议室预约系统</h1>
+      <p>需求分析与系统设计 · 内部技术方案（验收稿）</p>
+      <div class="tags">
+        <span class="tag">微信小程序（用户端）</span>
+        <span class="tag">Web 管理后台（管理员端）</span>
+        <span class="tag">单企业单组织</span>
+      </div>
+    </div>
+
+    <!-- 概览 -->
+    <section id="overview">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">项目概览</h2><span class="sub">Overview</span></div>
+      <div class="grid grid-4">
+        <div class="stat c-blue"><div class="num">2<span class="unit"> 端</span></div><div class="lbl">小程序 + Web 后台</div></div>
+        <div class="stat c-green"><div class="num">15<span class="unit"> 项</span></div><div class="lbl">核心功能点</div></div>
+        <div class="stat c-purple"><div class="num">6<span class="unit"> 张</span></div><div class="lbl">核心数据表</div></div>
+        <div class="stat c-amber"><div class="num">21<span class="unit"> 个</span></div><div class="lbl">RESTful 接口</div></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4><span class="em">◆</span>项目背景</h4>
+        <p>传统会议室管理（口头沟通、群接龙、纸质登记）存在信息不透明、易重复预订、无法追溯等问题。本项目打造一套<strong>企业内部会议室预约系统</strong>，采用「微信小程序 + Web 后台」双端架构，实现会议室资源的数字化、流程化、透明化管理。</p>
+      </div>
+
+      <div class="card">
+        <h4><span class="em">◆</span>两类角色</h4>
+        <table>
+          <thead><tr><th>角色</th><th>说明</th><th>使用端</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge b-blue">普通用户</span></td><td>企业员工，进行会议室预约</td><td>微信小程序</td></tr>
+            <tr><td><span class="badge b-purple">管理员</span></td><td>系统管理者，资源与预约管理</td><td>Web 管理后台</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 架构 -->
+    <section id="arch">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">系统架构</h2><span class="sub">Architecture</span></div>
+      <div class="card">
+        <div class="arch">
+          <div class="arch-layer"><div class="t">微信小程序（用户端）</div><div class="d">会议室浏览 · 预约 · 签到 · 公告</div></div>
+          <div class="arch-layer"><div class="t">Web 管理后台（管理员端）</div><div class="d">Vue3 + Element Plus · 资源与预约管理</div></div>
+          <div class="arch-down">▼ &nbsp;HTTPS / JSON&nbsp; ▼</div>
+          <div class="arch-layer hl"><div class="t">Spring Boot 后端服务</div><div class="d">Controller → Service → Mapper 三层结构</div></div>
+          <div class="arch-down">▼</div>
+          <div class="arch-layer"><div class="t">MySQL 8.0 数据库</div><div class="d">业务数据持久化</div></div>
+        </div>
+        <p class="muted" style="margin-top:14px;">采用前后端分离架构，双端通过统一 RESTful API 访问后端，Sa-Token 统一鉴权。</p>
+      </div>
+    </section>
+
+    <!-- 技术栈 -->
+    <section id="tech">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">技术栈选型</h2><span class="sub">Tech Stack</span></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>层次</th><th>技术选型</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge b-cyan">前端</span></td><td><code>微信小程序原生框架</code></td><td>直接对接微信登录、手机号组件</td></tr>
+            <tr><td><span class="badge b-cyan">前端</span></td><td><code>Vue3 + Vite + Element Plus + Axios</code></td><td>JavaScript，现代化前端</td></tr>
+            <tr><td><span class="badge b-green">后端</span></td><td><code>Spring Boot 2.7.x</code></td><td>成熟稳定，生态完善</td></tr>
+            <tr><td><span class="badge b-green">后端</span></td><td><code>MyBatis-Plus</code></td><td>简化 CRUD，分页插件</td></tr>
+            <tr><td><span class="badge b-purple">数据</span></td><td><code>MySQL 8.0</code></td><td>关系型数据存储</td></tr>
+            <tr><td><span class="badge b-purple">数据</span></td><td><code>Redis（可选）</code></td><td>验证码、热点数据缓存</td></tr>
+            <tr><td><span class="badge b-amber">安全</span></td><td><code>Sa-Token</code></td><td>轻量级权限认证框架</td></tr>
+            <tr><td><span class="badge b-amber">部署</span></td><td><code>Nginx + 单体应用</code></td><td>前后端分离部署</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <b>选型理由：</b>整体技术栈贴合主流企业内部系统实践，且与团队既有技能栈高度一致，降低开发维护成本。管理员端选用 <b>Vue3</b> 兼顾技术先进性与长期维护性。
+      </div>
+    </section>
+
+    <!-- 功能模块 -->
+    <section id="module">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">功能模块</h2><span class="sub">Modules</span></div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h4><span class="em">◆</span>用户端（微信小程序）</h4>
+          <ul class="feature">
+            <li><b>登录</b> — 微信一键登录 + 手机号绑定</li>
+            <li><b>浏览会议室</b> — 列表、图片、容量、设备、位置</li>
+            <li><b>预约会议室</b> — 选择时间段，提交预约</li>
+            <li><b>我的预约</b> — 记录与状态查看</li>
+            <li><b>取消预约</b> — 时间范围内取消</li>
+            <li><b>签到</b> — 扫码 / 定位签到</li>
+            <li><b>查看公告</b> — 系统公告</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4><span class="em">◆</span>管理员端（Web 后台）</h4>
+          <ul class="feature">
+            <li><b>登录</b> — 账号密码 + 图形验证码</li>
+            <li><b>会议室管理</b> — 增删改查、启停、图片</li>
+            <li><b>设备管理</b> — 投影 / 白板 / 视频会议维护</li>
+            <li><b>预约审核</b> — 通过 / 驳回</li>
+            <li><b>预约管理</b> — 查询、取消、违约记录</li>
+            <li><b>用户管理</b> — 禁用 / 解禁</li>
+            <li><b>公告管理</b> — 发布 / 编辑 / 下线</li>
+            <li><b>数据统计</b> — 使用率、预约趋势</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数据库 -->
+    <section id="db">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">数据库设计</h2><span class="sub">Database</span></div>
+      <div class="card">
+        <h4><span class="em">◆</span>核心表</h4>
+        <div class="grid grid-3">
+          <div class="stat c-blue"><div class="num" style="font-size:17px;">sys_user</div><div class="lbl">用户表（openid 唯一）</div></div>
+          <div class="stat c-blue"><div class="num" style="font-size:17px;">sys_admin</div><div class="lbl">管理员表</div></div>
+          <div class="stat c-blue"><div class="num" style="font-size:17px;">meeting_room</div><div class="lbl">会议室表</div></div>
+          <div class="stat c-purple"><div class="num" style="font-size:17px;">room_device</div><div class="lbl">设备表</div></div>
+          <div class="stat c-amber"><div class="num" style="font-size:17px;">booking</div><div class="lbl">预约记录表（核心）</div></div>
+          <div class="stat c-green"><div class="num" style="font-size:17px;">announcement</div><div class="lbl">公告表</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4><span class="em">◆</span>预约记录表 booking（核心）</h4>
+        <table>
+          <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>bigint</td><td>主键</td></tr>
+            <tr><td><code>user_id</code></td><td>bigint</td><td>预约用户</td></tr>
+            <tr><td><code>room_id</code></td><td>bigint</td><td>会议室</td></tr>
+            <tr><td><code>start_time</code></td><td>datetime</td><td>开始时间</td></tr>
+            <tr><td><code>end_time</code></td><td>datetime</td><td>结束时间</td></tr>
+            <tr><td><code>status</code></td><td>tinyint</td><td><span class="badge b-amber">0待审批</span> <span class="badge b-green">1已通过</span> <span class="badge b-red">2已驳回</span> <span class="badge b-blue">3已取消</span> <span class="badge b-purple">4已违约</span></td></tr>
+            <tr><td><code>subject</code></td><td>varchar(128)</td><td>会议主题</td></tr>
+            <tr><td><code>create_time</code></td><td>datetime</td><td>创建时间</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 登录流程 -->
+    <section id="login">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">微信登录流程</h2><span class="sub">Login Flow</span></div>
+      <div class="card">
+        <p style="margin-bottom:4px;">采用「微信授权 + 手机号绑定」方案：</p>
+        <div class="flow">
+          <div class="step">wx.login()<span class="sm">获取 code</span></div>
+          <span class="arrow">→</span>
+          <div class="step">code2session<span class="sm">换 openid</span></div>
+          <span class="arrow">→</span>
+          <div class="step">查询用户<span class="sm">签发 token</span></div>
+          <span class="arrow">→</span>
+          <div class="step">getPhoneNumber<span class="sm">手机号授权</span></div>
+          <span class="arrow">→</span>
+          <div class="step">绑定手机号<span class="sm">完成注册</span></div>
+        </div>
+        <div class="callout">
+          <b>关键点：</b>openid 作为用户唯一标识，天然防重复注册；手机号由微信接口安全解密，后端拿到的是微信绑定手机号，用户无需手动输入；token 由 Sa-Token 统一管理。
+        </div>
+      </div>
+    </section>
+
+    <!-- 预约流程 -->
+    <section id="booking">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">预约核心流程</h2><span class="sub">Booking Flow</span></div>
+      <div class="card">
+        <div class="flow">
+          <div class="step">选会议室<span class="sm">选时间段</span></div>
+          <span class="arrow">→</span>
+          <div class="step">提交预约<span class="sm">请求</span></div>
+          <span class="arrow">→</span>
+          <div class="step">冲突检测<span class="sm">时间交集</span></div>
+          <span class="arrow">→</span>
+          <div class="step">创建记录<span class="sm">待审批/已通过</span></div>
+          <span class="arrow">→</span>
+          <div class="step">审批通过<span class="sm">签到使用</span></div>
+        </div>
+        <div class="callout warn">
+          <b>冲突检测逻辑：</b>同一会议室内，新预约时间区间与已有有效预约存在交集即冲突。<br>
+          <code>new.start_time &lt; existing.end_time && new.end_time &gt; existing.start_time</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- 接口清单 -->
+    <section id="api">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">接口清单</h2><span class="sub">API List</span></div>
+      <div class="card">
+        <h4><span class="em">◆</span>用户端接口</h4>
+        <table>
+          <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/auth/login</code></td><td>微信登录（code 换 token）</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/auth/bind-phone</code></td><td>绑定手机号</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/room/list</code></td><td>会议室列表</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/room/{id}</code></td><td>会议室详情</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/booking/create</code></td><td>创建预约</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/booking/my</code></td><td>我的预约列表</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/booking/cancel/{id}</code></td><td>取消预约</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/booking/sign/{id}</code></td><td>签到</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/announcement/list</code></td><td>公告列表</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h4><span class="em">◆</span>管理员端接口</h4>
+        <table>
+          <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/admin/login</code></td><td>管理员登录</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/admin/captcha</code></td><td>图形验证码</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/admin/room</code></td><td>新增会议室</td></tr>
+            <tr><td><span class="method m-put">PUT</span></td><td><code>/api/admin/room/{id}</code></td><td>修改会议室</td></tr>
+            <tr><td><span class="method m-del">DELETE</span></td><td><code>/api/admin/room/{id}</code></td><td>删除会议室</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/admin/booking/list</code></td><td>预约列表（可筛选）</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/admin/booking/approve/{id}</code></td><td>审批通过</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/admin/booking/reject/{id}</code></td><td>审批驳回</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/admin/user/list</code></td><td>用户列表</td></tr>
+            <tr><td><span class="method m-put">PUT</span></td><td><code>/api/admin/user/{id}/status</code></td><td>启用/禁用用户</td></tr>
+            <tr><td><span class="method m-post">POST</span></td><td><code>/api/admin/announcement</code></td><td>发布公告</td></tr>
+            <tr><td><span class="method m-get">GET</span></td><td><code>/api/admin/stats</code></td><td>数据统计</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 业务规则 -->
+    <section id="rule">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">业务规则默认设计</h2><span class="sub">Rules</span></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>规则项</th><th>默认设计</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>预约时段粒度</td><td><span class="badge b-blue">30 分钟</span></td><td>支持按 30 分钟取整</td></tr>
+            <tr><td>单次预约时长</td><td><span class="badge b-blue">1-4 小时</span></td><td>可配置上限</td></tr>
+            <tr><td>提前预约</td><td><span class="badge b-blue">可提前 7 天</span></td><td>可配置</td></tr>
+            <tr><td>是否需审批</td><td><span class="badge b-amber">默认需审批</span></td><td>可切换为免审批模式</td></tr>
+            <tr><td>取消规则</td><td><span class="badge b-blue">开始前 2 小时可取消</span></td><td>可配置</td></tr>
+            <tr><td>签到规则</td><td><span class="badge b-blue">开始前后 15 分钟内签到</span></td><td>未签到计违约</td></tr>
+            <tr><td>违约限制</td><td><span class="badge b-red">累计 3 次限制预约 7 天</span></td><td>可配置</td></tr>
+            <tr><td>会议室开放时间</td><td><span class="badge b-blue">按会议室独立配置</span></td><td>默认 08:00-20:00</td></tr>
+            <tr><td>设备管理</td><td><span class="badge b-green">投影/白板/视频会议/电话</span></td><td>可按需扩展</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 开发计划 -->
+    <section id="plan">
+      <div class="sec-head"><span class="dot"></span><h2 class="sec">开发计划与里程碑</h2><span class="sub">Roadmap</span></div>
+      <div class="card">
+        <ul class="timeline">
+          <li>
+            <div class="p-title">阶段一 · 后端基础框架 + 登录鉴权</div>
+            <div class="p-desc">交付物：可运行的登录接口</div>
+          </li>
+          <li>
+            <div class="p-title">阶段二 · 会议室 / 预约核心功能</div>
+            <div class="p-desc">交付物：预约全流程打通</div>
+          </li>
+          <li>
+            <div class="p-title">阶段三 · 小程序端开发</div>
+            <div class="p-desc">交付物：用户端功能完成</div>
+          </li>
+          <li>
+            <div class="p-title">阶段四 · 管理端开发</div>
+            <div class="p-desc">交付物：后台管理功能完成</div>
+          </li>
+          <li>
+            <div class="p-title">阶段五 · 联调测试与上线</div>
+            <div class="p-desc">交付物：完整可交付系统</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="muted" style="text-align:center; margin-top:40px;">会议室预约系统 · 需求分析与系统设计 V1.0 · 编制于 2026 年 10 月</p>
+  </main>
+</div>
+
+<button class="scroll-top" id="scrollTop" title="回到顶部">↑</button>
+
+<script>
+  const links = document.querySelectorAll('aside nav a');
+  const sections = document.querySelectorAll('main section');
+  const scrollBtn = document.getElementById('scrollTop');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 140) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+    scrollBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+  });
+
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  scrollBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>

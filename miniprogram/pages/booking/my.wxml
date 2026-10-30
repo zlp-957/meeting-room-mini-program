@@ -1,0 +1,67 @@
+<view class="my-booking-page">
+  <!-- 状态筛选 -->
+  <scroll-view class="tab-bar" scroll-x="{{true}}" show-scrollbar="{{false}}">
+    <view class="tab-inner">
+      <view class="tab-item {{currentStatus === 0 ? 'active' : ''}}" bindtap="switchTab" data-status="0">待审批</view>
+      <view class="tab-item {{currentStatus === 1 ? 'active' : ''}}" bindtap="switchTab" data-status="1">已通过</view>
+      <view class="tab-item {{currentStatus === 2 ? 'active' : ''}}" bindtap="switchTab" data-status="2">已驳回</view>
+      <view class="tab-item {{currentStatus === 3 ? 'active' : ''}}" bindtap="switchTab" data-status="3">已取消</view>
+      <view class="tab-item {{currentStatus === 4 ? 'active' : ''}}" bindtap="switchTab" data-status="4">已违约</view>
+    </view>
+  </scroll-view>
+
+  <!-- 预约列表 -->
+  <view class="booking-list">
+    <view
+      class="booking-card anim-item"
+      style="animation-delay: {{index * 50}}ms;"
+      wx:for="{{bookings}}"
+      wx:key="id"
+    >
+      <view class="card-head">
+        <text class="subject">{{item.subject || '未填写主题'}}</text>
+        <text class="badge {{item.badgeClass}}">{{item.statusText}}</text>
+      </view>
+
+      <view class="room-line">
+        <view class="room-dot"></view>
+        <text class="room-name">{{item.roomName || '会议室'}}</text>
+      </view>
+
+      <view class="time-row">
+        <text class="time-date">{{item.timeDate}}</text>
+        <text class="time-range">{{item.timeMain}}</text>
+      </view>
+
+      <view class="checkin-tip" wx:if="{{item.checkInText}}">{{item.checkInText}}</view>
+
+      <view class="reject-reason" wx:if="{{item.status === 2 && item.rejectReason}}">
+        驳回原因：{{item.rejectReason}}
+      </view>
+
+      <!-- 违约说明：让用户明白时段为什么没了，而不是只看到一个紫色标签 -->
+      <view class="violated-tip" wx:if="{{item.status === 4}}">
+        未在签到截止时间前完成扫码签到，该会议室时段已释放
+      </view>
+
+      <!--
+        签到提示常驻：窗口没开时告诉用户「几点开始」，窗口开了才提示「去哪儿扫」。
+        按钮本身在审批通过后就一直挂在卡片上，避免用户以为不用签到。
+      -->
+      <view class="sign-hint {{item.canSign && !item.signWindowOpen ? 'sign-hint-wait' : ''}}" wx:if="{{item.canSign}}">
+        {{item.signHintText}}
+      </view>
+
+      <view class="card-foot" wx:if="{{item.canSign || item.canCancel || item.canEdit}}">
+        <view wx:if="{{item.canEdit}}" class="btn-ghost" data-id="{{item.id}}" bindtap="edit" hover-class="btn-sm-hover">修改预约</view>
+        <view wx:if="{{item.canCancel}}" class="btn-ghost" data-id="{{item.id}}" bindtap="cancel" hover-class="btn-sm-hover">取消预约</view>
+        <view wx:if="{{item.canSign}}" class="btn-primary-sm {{item.signWindowOpen ? '' : 'btn-primary-wait'}}" data-id="{{item.id}}" bindtap="sign" hover-class="btn-sm-hover">扫码签到</view>
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && bookings.length === 0}}" class="empty">
+      <text class="empty-icon">📅</text>
+      <text class="empty-text">{{emptyText}}</text>
+    </view>
+  </view>
+</view>

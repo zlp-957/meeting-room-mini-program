@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>预约页 · 双滑动日期 + 双列滚轮</title>
+<style>
+/* ===== 全局公共样式 · 简约现代风 ===== */
+body {
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-light: #eef4ff;
+  --brand-gradient: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%);
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --text-muted: #9aa3b2;
+  --line: #eef1f5;
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-card: 0 2px 12px rgba(17, 24, 39, 0.05);
+  --shadow-float: 0 6px 16px rgba(37, 99, 235, 0.18);
+
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 通用动画关键帧 ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  margin: 10px 16px;
+  box-shadow: var(--shadow-card);
+}
+
+/* 主按钮：用 view 实现，规避微信 button 默认 width:184px 的限制 */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 500;
+  height: 44px;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-float);
+}
+.btn-primary::after { border: none; }
+
+/* 统一按压反馈（配合 hover-class 使用） */
+.btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* 通用加载转圈（view 按钮无法使用 loading 属性） */
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  margin-right: 6px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  animation: btnSpin 0.7s linear infinite;
+}
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* 徽章 */
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-pending { background: #fef3e2; color: #b45309; }
+.badge-approved { background: #e6f4ee; color: #15803d; }
+.badge-rejected { background: #fdeaea; color: #b91c1c; }
+.badge-canceled { background: #eef2f6; color: #64748b; }
+.badge-violated { background: #f1edfa; color: #6d28d9; }
+
+/* 文本省略 */
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 空状态通用 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 70px 0;
+  animation: fadeIn 0.5s ease;
+}
+.empty-icon {
+  font-size: 44px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+.empty-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ===== 骨架屏通用 ===== */
+.skeleton-block {
+  background: linear-gradient(90deg, #f0f2f5 25%, #e6e9ee 37%, #f0f2f5 63%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+.booking-page {
+  min-height: 100vh;
+  padding-bottom: 80px;
+  background: #f5f6f8;
+}
+
+/* ===== 顶部会议室渐变头 ===== */
+.room-head {
+  padding: 20px 20px 40px;
+  background: linear-gradient(180deg, #2563eb 0%, #2258dd 55%, #1d4ed8 100%);
+  border-radius: 0 0 20px 20px;
+  margin-bottom: -24px;
+}
+
+.room-head-name {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  animation: fadeInUp 0.4s ease;
+}
+
+.room-head-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.88);
+  animation: fadeInUp 0.4s ease 0.08s both;
+}
+
+/* 编辑模式：房间名 + 「更换 ›」并排，整行可点 */
+.room-head-picker {
+  display: flex;
+  align-items: center;
+  animation: fadeInUp 0.4s ease;
+}
+
+.room-head-picker .room-head-name {
+  animation: none;
+}
+
+.room-head-switch {
+  margin-left: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.16);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* 编辑模式提示条：在渐变头下方、内容卡片之上 */
+.edit-tip {
+  margin: 34px 16px 0;
+  padding: 9px 11px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 7px;
+  animation: fadeInUp 0.4s ease 0.06s both;
+}
+
+.booking-page .card {
+  animation: fadeInUp 0.45s ease 0.1s both;
+}
+
+.section {
+  margin-top: 18px;
+}
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* 小节标题行：左标题 + 右当前值 */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.section-head .section-label {
+  margin-bottom: 0;
+}
+.section-value {
+  font-size: 12px;
+  color: #6c7486;
+}
+
+/* ===== 预约日期 · 月份 + 日期 双滑动 ===== */
+.month-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 9px;
+}
+
+.month-row {
+  display: inline-block;
+  padding: 1px 0;
+  font-size: 0;
+}
+
+.month-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 15px;
+  margin-right: 6px;
+  border-radius: 14px;
+  font-size: 12.5px;
+  color: #5b6472;
+  background: #f4f6f9;
+  transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+.month-chip.active {
+  color: #2563eb;
+  background: #eaf1ff;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px #c3d7fb;
+}
+.month-chip-hover {
+  background: #eceff4;
+}
+
+.date-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.date-row {
+  display: inline-block;
+  padding: 3px 0 2px;
+  font-size: 0;
+}
+
+.date-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 62px;
+  margin-right: 7px;
+  border-radius: 10px;
+  background: #f4f6f9;
+  transition: background 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.date-week {
+  font-size: 11px;
+  line-height: 1.2;
+  color: #98a1b0;
+}
+
+.date-num {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 3px;
+  color: #1f2937;
+}
+
+.date-item.is-today .date-num {
+  color: #2563eb;
+}
+
+.date-item.active {
+  background: var(--brand-gradient);
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.28);
+}
+.date-item.active .date-week {
+  color: rgba(255, 255, 255, 0.82);
+}
+.date-item.active .date-num {
+  color: #ffffff;
+}
+
+.date-item-hover {
+  transform: scale(0.95);
+}
+
+/* ===== 时间段 · 双列滚轮 ===== */
+/* 底色用纯白：picker-view 自带的上下渐隐遮罩是白色，
+   底色若不是白，滚轮两端会浮出一层白雾，和卡片对不上 */
+.time-picker {
+  background: #ffffff;
+  border: 0.5px solid #edf0f5;
+  border-radius: 10px;
+  padding: 1px 8px 5px;
+}
+
+.tp-caption {
+  display: flex;
+  padding: 8px 0 2px;
+}
+
+.tp-caption-text {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: #98a1b0;
+  letter-spacing: 1px;
+}
+
+.tp-view {
+  width: 100%;
+  height: 180px;
+}
+
+/* 中间选中带：淡蓝底，比纯白更容易一眼看出「正在选这一行」 */
+.tp-indicator {
+  background: #e3edff;
+}
+
+.tp-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* 当日无可用时段 */
+.empty-slots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 10px;
+  background: #f7f9fc;
+  border-radius: 10px;
+}
+.empty-slots-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #4b5563;
+}
+.empty-slots-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9aa3b2;
+}
+
+/* 可用时段摘要 */
+.avail-tip {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.avail-label {
+  flex-shrink: 0;
+  margin-right: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  color: #2563eb;
+  background: #eef4ff;
+}
+.avail-text {
+  color: #6c7486;
+}
+
+.subject-input {
+  background: #f6f7f9;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 14px;
+  color: #1f2937;
+  border: 1px solid transparent;
+}
+.subject-ph {
+  color: #c0c6d0;
+}
+
+.bottom-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 16px;
+  padding-bottom: calc(10px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  background: #ffffff;
+  box-shadow: 0 -2px 10px rgba(17, 24, 39, 0.06);
+}
+
+.bottom-btn .btn-primary {
+  width: 100%;
+  height: 46px;
+  border-radius: 23px;
+  font-size: 15.5px;
+}
+
+.btn-disabled {
+  background: #dfe3e9 !important;
+  color: #9aa3b2 !important;
+  box-shadow: none !important;
+}
+
+
+html, body { margin: 0; padding: 0; }
+body { background: #e9ecf2; display: block; padding: 20px 0; }
+.phone { width: 375px; margin: 0 auto; background: #f5f6f8; border-radius: 14px;
+  overflow: hidden; box-shadow: 0 18px 50px rgba(15,23,42,.16); }
+.booking-page { padding-bottom: 0 !important; min-height: auto !important; }
+.bottom-btn { position: static !important; }
+/* 日期行滚动效果：外层裁切，内层负偏移 */
+.date-scroll { overflow: hidden; }
+.date-row { margin-left: 0px; }
+/* picker-view 原生布局在 HTML 里得自己搭 */
+.tp-view { position: relative; display: flex; overflow: hidden; }
+.tp-col { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 2; }
+.tp-item-empty { visibility: hidden; }
+/* 淡蓝选中带压在文字底下 */
+.tp-indicator { position: absolute; left: 0; right: 0; top: 72.0px;
+  height: 36.0px; pointer-events: none; z-index: 1; }
+.tp-mask { position: absolute; left: 0; right: 0; top: 0; height: 36.0px; pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,0));
+  z-index: 3; }
+.tp-mask-b { position: absolute; left: 0; right: 0; bottom: 0; height: 36.0px; pointer-events: none;
+  background-image: linear-gradient(0deg, rgba(255,255,255,.98), rgba(255,255,255,0));
+  z-index: 3; }
+
+</style></head>
+<body>
+<div class="phone">
+  <div class="booking-page">
+    <div class="room-head">
+      <span class="room-head-name">3号会议室 · 黄河</span>
+      <span class="room-head-hint">营业时间 08:00 - 22:00</span>
+    </div>
+
+    <div class="card">
+      <div class="section">
+        <div class="section-head">
+          <span class="section-label">预约日期</span>
+          <span class="section-value">10月30日 周五</span>
+        </div>
+        <div class="month-scroll"><div class="month-row"><div class="month-chip active">10月</div><div class="month-chip">11月</div></div></div>
+        <div class="date-scroll"><div class="date-row"><div class="date-item is-today"><span class="date-week">今天</span><span class="date-num">29</span></div><div class="date-item active"><span class="date-week">周五</span><span class="date-num">30</span></div><div class="date-item"><span class="date-week">周六</span><span class="date-num">31</span></div><div class="date-item"><span class="date-week">周日</span><span class="date-num">1</span></div><div class="date-item"><span class="date-week">周一</span><span class="date-num">2</span></div><div class="date-item"><span class="date-week">周二</span><span class="date-num">3</span></div><div class="date-item"><span class="date-week">周三</span><span class="date-num">4</span></div><div class="date-item"><span class="date-week">周四</span><span class="date-num">5</span></div><div class="date-item"><span class="date-week">周五</span><span class="date-num">6</span></div><div class="date-item"><span class="date-week">周六</span><span class="date-num">7</span></div><div class="date-item"><span class="date-week">周日</span><span class="date-num">8</span></div><div class="date-item"><span class="date-week">周一</span><span class="date-num">9</span></div><div class="date-item"><span class="date-week">周二</span><span class="date-num">10</span></div><div class="date-item"><span class="date-week">周三</span><span class="date-num">11</span></div></div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <span class="section-label">时间段</span>
+          <span class="section-value">11:00 - 12:00</span>
+        </div>
+        <div class="time-picker">
+          <div class="tp-caption">
+            <span class="tp-caption-text">开始</span>
+            <span class="tp-caption-text">结束</span>
+          </div>
+          <div class="tp-view">
+            <div class="tp-col"><div class="tp-item">10:30</div><div class="tp-item">10:45</div><div class="tp-item">11:00</div><div class="tp-item">11:15</div><div class="tp-item">11:30</div></div>
+            <div class="tp-col"><div class="tp-item">11:30</div><div class="tp-item">11:45</div><div class="tp-item">12:00</div><div class="tp-item">12:15</div><div class="tp-item">12:30</div></div>
+            <div class="tp-indicator"></div>
+            <div class="tp-mask"></div>
+            <div class="tp-mask-b"></div>
+          </div>
+        </div>
+        <div class="avail-tip">
+          <span class="avail-label">可选</span>
+          <span class="avail-text">08:00-08:45、10:15-13:45、15:45-22:00</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <span class="section-label">会议主题</span>
+        <input class="subject-input" placeholder="请输入会议主题（必填）">
+      </div>
+    </div>
+
+    <div class="bottom-btn"><div class="btn-primary">提交预约</div></div>
+  </div>
+</div>
+</body></html>

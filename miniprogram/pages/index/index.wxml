@@ -1,0 +1,92 @@
+<view class="index-page">
+  <!-- 顶部渐变头部 + 筛选入口 -->
+  <view class="page-head">
+    <view class="head-left">
+      <text class="head-title">会议室</text>
+      <text class="head-sub">共 {{rooms.length}} 间可预约</text>
+    </view>
+
+    <view
+      class="filter-chip {{minCapacity > 0 ? 'is-active' : ''}}"
+      bindtap="openFilter"
+      hover-class="chip-hover"
+    >
+      <text class="chip-text">{{minCapacity > 0 ? '≥ ' + minCapacity + ' 人' : '筛选'}}</text>
+      <text class="chip-caret">▾</text>
+    </view>
+  </view>
+
+  <!-- 会议室列表：首次加载展示骨架屏，其余渲染真实卡片 -->
+  <view wx:if="{{loading && rooms.length === 0}}" class="room-list">
+    <view class="room-card skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+      <view class="room-main">
+        <view class="skeleton-line skeleton-block" style="width: 42%;"></view>
+        <view class="skeleton-line skeleton-block" style="width: 72%;"></view>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="room-list">
+    <view
+      class="room-card anim-item"
+      style="animation-delay: {{index * 60}}ms;"
+      wx:for="{{rooms}}"
+      wx:key="id"
+      bindtap="goDetail"
+      data-id="{{item.id}}"
+      hover-class="room-card-hover"
+    >
+      <view class="room-main">
+        <view class="room-name-row">
+          <text class="room-name">{{item.name}}</text>
+          <text class="room-status-free">可预约</text>
+        </view>
+        <view class="room-meta">
+          <text class="meta-item">{{item.location || '位置待定'}}</text>
+          <text class="meta-dot">·</text>
+          <text class="meta-item">{{item.capacity}} 人</text>
+          <text class="meta-dot">·</text>
+          <text class="meta-item">{{item.openTimeText}}-{{item.closeTimeText}}</text>
+        </view>
+      </view>
+      <text class="room-arrow">›</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{rooms.length === 0}}" class="empty">
+      <text class="empty-icon">🏢</text>
+      <text class="empty-text">{{minCapacity > 0 ? '暂无能容纳 ' + minCapacity + ' 人的会议室' : '暂无会议室'}}</text>
+      <view wx:if="{{minCapacity > 0}}" class="empty-btn" bindtap="onResetFilter">查看全部</view>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 人数筛选面板 ===== -->
+<view wx:if="{{showFilter}}" class="mask" bindtap="closeFilter" catchtouchmove="noop"></view>
+<view wx:if="{{showFilter}}" class="sheet" catchtap="noop">
+  <view class="sheet-bar"></view>
+  <view class="sheet-head">
+    <text class="sheet-title">按参会人数筛选</text>
+    <text class="sheet-close" bindtap="closeFilter">关闭</text>
+  </view>
+  <text class="sheet-desc">输入人数，只显示坐得下的会议室</text>
+
+  <view class="sheet-input-wrap">
+    <input
+      class="sheet-input"
+      type="number"
+      value="{{filterCapacity}}"
+      placeholder="请输入人数"
+      placeholder-class="sheet-input-ph"
+      bindinput="onCapacityInput"
+      bindconfirm="onApplyFilter"
+      confirm-type="done"
+      focus="{{showFilter}}"
+    />
+    <text class="sheet-unit">人</text>
+  </view>
+
+  <view class="sheet-actions">
+    <view class="sheet-btn sheet-btn-ghost" bindtap="onResetFilter">不限人数</view>
+    <view class="sheet-btn sheet-btn-primary" bindtap="onApplyFilter">确定</view>
+  </view>
+</view>

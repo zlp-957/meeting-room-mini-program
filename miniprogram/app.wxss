@@ -1,0 +1,158 @@
+/* ===== 全局公共样式 · 简约现代风 ===== */
+page {
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-light: #eef4ff;
+  --brand-gradient: linear-gradient(135deg, #4f8dfd 0%, #2563eb 100%);
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --text-muted: #9aa3b2;
+  --line: #eef1f5;
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --radius-lg: 24rpx;
+  --radius-md: 16rpx;
+  --shadow-card: 0 4rpx 24rpx rgba(17, 24, 39, 0.05);
+  --shadow-float: 0 12rpx 32rpx rgba(37, 99, 235, 0.18);
+
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text-main);
+  font-size: 28rpx;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 通用动画关键帧 ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10rpx); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400rpx 0; }
+  100% { background-position: 400rpx 0; }
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 30rpx;
+  margin: 20rpx 32rpx;
+  box-shadow: var(--shadow-card);
+}
+
+/* 主按钮：用 view 实现，规避微信 button 默认 width:184px 的限制 */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  border-radius: 14rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  height: 88rpx;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-float);
+}
+.btn-primary::after { border: none; }
+
+/* 统一按压反馈（配合 hover-class 使用） */
+.btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* 通用加载转圈（view 按钮无法使用 loading 属性） */
+.btn-spinner {
+  width: 30rpx;
+  height: 30rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  animation: btnSpin 0.7s linear infinite;
+}
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* 徽章 */
+.badge {
+  display: inline-block;
+  padding: 4rpx 18rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+.badge-pending { background: #fef3e2; color: #b45309; }
+.badge-approved { background: #e6f4ee; color: #15803d; }
+.badge-rejected { background: #fdeaea; color: #b91c1c; }
+.badge-canceled { background: #eef2f6; color: #64748b; }
+.badge-violated { background: #f1edfa; color: #6d28d9; }
+
+/* 文本省略 */
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 空状态通用 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 140rpx 0;
+  animation: fadeIn 0.5s ease;
+}
+.empty-icon {
+  font-size: 88rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.4;
+}
+.empty-text {
+  font-size: 28rpx;
+  color: var(--text-muted);
+}
+
+/* ===== 骨架屏通用 ===== */
+.skeleton-block {
+  background: linear-gradient(90deg, #f0f2f5 25%, #e6e9ee 37%, #f0f2f5 63%);
+  background-size: 800rpx 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 12rpx;
+}

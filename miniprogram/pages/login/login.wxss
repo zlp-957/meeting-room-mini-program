@@ -1,0 +1,188 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #ffffff 0%, #e3ecff 22%, #f0f5ff 50%, #f5f6f8 76%, #f5f6f8 100%);
+  overflow: hidden;
+}
+
+/* ===== 品牌区 ===== */
+.brand {
+  padding: 170rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.6s ease;
+}
+
+/* 品牌标：拱门造型，纯 CSS 绘制（不切图、任意屏幕密度都清晰）
+   132rpx = 66px，门洞占比 43% x 51%，落在视觉中心略偏上 */
+.logo {
+  position: relative;
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 38rpx;
+  background: var(--brand-gradient);
+  box-shadow: 0 18rpx 44rpx rgba(37, 99, 235, 0.32);
+  animation: float 3.2s ease-in-out infinite;
+  overflow: hidden;
+}
+
+/* 顶部高光：避免方块显得像纯色贴片 */
+.logo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 52%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+/* 门洞：上圆下方，底边开口（门立在地面上） */
+.logo-door {
+  position: absolute;
+  left: 50%;
+  top: 27%;
+  width: 43%;
+  height: 51%;
+  transform: translateX(-50%);
+  border: 5rpx solid #ffffff;
+  border-bottom: none;
+  border-radius: 50% 50% 0 0 / 40% 40% 0 0;
+  box-sizing: border-box;
+}
+
+/* 门把手 */
+.logo-knob {
+  position: absolute;
+  right: 37%;
+  top: 60%;
+  width: 7rpx;
+  height: 7rpx;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.brand-name {
+  margin-top: 36rpx;
+  font-size: 46rpx;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: 2rpx;
+}
+
+.brand-sub {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: #8a94a6;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 特性列表 ===== */
+/* 整块居中：作为 flex 子项设 align-self: center，宽度会收缩到内容宽度，
+   于是整块的中线落在屏幕中线上，最宽一行的左右留白自然对称。
+   块内仍 align-items: flex-start，保证三行图标对齐成一列，
+   而不是每行各自居中导致左边缘参差。 */
+.feature-list {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 76rpx;
+  max-width: calc(100% - 96rpx);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+  animation: fadeInUp 0.5s ease both;
+}
+
+/* 最后一行不再留底部空隙，避免整块重心偏上 */
+.feature-item:last-child {
+  margin-bottom: 0;
+}
+
+.feature-dot {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 4rpx 14rpx rgba(37, 99, 235, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.feature-text {
+  font-size: 26rpx;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ===== 底部登录区 ===== */
+.login-footer {
+  margin-top: auto;
+  padding: 0 56rpx 64rpx;
+  padding-bottom: calc(64rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
+  animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 500;
+  letter-spacing: 1rpx;
+  box-shadow: 0 12rpx 28rpx rgba(37, 99, 235, 0.26);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.login-btn:active {
+  transform: scale(0.97);
+}
+.login-btn.is-loading {
+  opacity: 0.85;
+}
+
+/* 加载中转圈样式见 app.wxss 全局 .btn-spinner */
+/* 按压反馈：view 不触发 :active，用 hover-class */
+.login-btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+.agreement {
+  margin-top: 32rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #9aa3b2;
+}
+
+.link {
+  color: #4b7fe8;
+}
+
+/* 开发环境提示：当前后端地址 */
+.dev-hint {
+  display: block;
+  margin-top: 18rpx;
+  text-align: center;
+  font-size: 20rpx;
+  color: #b6bdc9;
+  word-break: break-all;
+}

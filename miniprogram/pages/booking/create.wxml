@@ -1,0 +1,222 @@
+<view class="booking-page">
+  <!-- 顶部会议室信息渐变头 -->
+  <view class="room-head">
+    <!-- 编辑模式允许换会议室：点房间名弹出选择器 -->
+    <picker
+      wx:if="{{isEdit && rooms.length > 0}}"
+      mode="selector"
+      range="{{rooms}}"
+      range-key="name"
+      value="{{roomIndex}}"
+      bindchange="onRoomChange"
+    >
+      <view class="room-head-picker">
+        <text class="room-head-name">{{roomName}}</text>
+        <text class="room-head-switch">更换 ›</text>
+      </view>
+    </picker>
+    <text wx:else class="room-head-name">{{roomName}}</text>
+    <text class="room-head-hint">营业时间 {{openTime}} - {{closeTime}}</text>
+  </view>
+
+  <!-- 编辑模式说明：改时间/会议室要重新审核，先说清楚免得用户以为保存就生效 -->
+  <view class="edit-tip" wx:if="{{isEdit}}">
+    修改时间或会议室后，已通过的预约会重新进入待审批，审核通过后即可扫码签到。
+  </view>
+
+  <!-- ===== 预约日期 ===== -->
+  <view class="card">
+    <!-- 横排日期卡，一屏 5 张，直接点 -->
+    <view class="section">
+      <text class="section-label">预约日期</text>
+
+      <scroll-view
+        class="date-scroll"
+        scroll-x
+        scroll-into-view="{{dateIntoView}}"
+        scroll-with-animation
+      >
+        <view class="date-row">
+          <view
+            wx:for="{{dateItems}}"
+            wx:key="value"
+            id="d{{index}}"
+            class="date-card {{item.value === selectedDate ? 'on' : ''}}"
+            data-date="{{item.value}}"
+            bindtap="onDateTap"
+            hover-class="{{item.value === selectedDate ? 'none' : 'date-card-hover'}}"
+            hover-stay-time="60"
+          >
+            <text class="dc-md">{{item.md}}</text>
+            <text class="dc-week">{{item.week}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 兜底提示：日期条本应恒有 14 张卡，为空说明 onLoad 没跑完，直接说出来而不是留一片空白 -->
+      <view class="date-empty" wx:if="{{dateItems.length === 0}}">
+        <text>日期未加载，请返回后重新进入</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 时间段 ===== -->
+  <view class="card">
+    <!-- 起止时间框 + 全天概览条 -->
+    <view class="section">
+      <view class="section-head">
+        <text class="section-label">时间段</text>
+        <text class="section-value">{{durationText}}</text>
+      </view>
+
+      <view class="time-row">
+        <view
+          class="time-box {{pickerOpen && pickerWhich === 'start' ? 'on' : ''}}"
+          data-which="start"
+          bindtap="openTimePicker"
+          hover-class="time-box-hover"
+          hover-stay-time="60"
+        >
+          <text class="tb-time">{{selectedStart || '--:--'}}</text>
+          <view class="tb-caret"></view>
+        </view>
+        <text class="time-to">到</text>
+        <view
+          class="time-box {{pickerOpen && pickerWhich === 'end' ? 'on' : ''}}"
+          data-which="end"
+          bindtap="openTimePicker"
+          hover-class="time-box-hover"
+          hover-stay-time="60"
+        >
+          <text class="tb-time">{{selectedEnd || '--:--'}}</text>
+          <view class="tb-caret"></view>
+        </view>
+      </view>
+
+      <!-- 概览条：全天 24 小时，只做展示 -->
+      <view class="ov">
+        <view class="ov-track">
+          <!-- 营业段：底色比非营业区深一档 -->
+          <view class="ov-biz" style="left:{{bizLeft}}%;width:{{bizWidth}}%"></view>
+          <view
+            wx:for="{{ovBands}}"
+            wx:key="key"
+            class="ov-occ"
+            style="left:{{item.left}}%;width:{{item.width}}%"
+          ></view>
+          <view
+            wx:if="{{ovSelWidth > 0}}"
+            class="ov-sel"
+            style="left:{{ovSelLeft}}%;width:{{ovSelWidth}}%"
+          ></view>
+          <!-- 刻度线压在色块之上：一小时一条，等长、垂直居中 -->
+          <view
+            wx:for="{{ovMarks}}"
+            wx:key="k"
+            class="ov-mark {{item.tone === 'mute' ? 'is-mute' : ''}}"
+            style="left:{{item.left}}%"
+          ></view>
+        </view>
+
+        <!-- 数字标签在条外，每小时一个，24 点写作换行的「次日」 -->
+        <view class="ov-labels">
+          <text
+            wx:for="{{ovLabels}}"
+            wx:key="k"
+            class="ov-label"
+            style="left:{{item.left}}%"
+          >{{item.text}}</text>
+          <view class="ov-label is-tomorrow">
+            <text>次</text>
+            <text>日</text>
+          </view>
+        </view>
+
+        <view class="ov-legend">
+          <view class="lg"><view class="lg-sw is-occ"></view><text class="lg-tx">已占</text></view>
+          <view class="lg"><view class="lg-sw is-free"></view><text class="lg-tx">可预约</text></view>
+          <view class="lg"><view class="lg-sw is-sel"></view><text class="lg-tx">已选</text></view>
+          <view class="lg"><view class="lg-sw is-off"></view><text class="lg-tx is-dim">非营业</text></view>
+        </view>
+      </view>
+
+      <view class="empty-slots" wx:if="{{loadFailed}}">
+        <text class="empty-slots-title">连不上后端服务</text>
+        <text class="empty-slots-sub">请检查手机与电脑是否同一 Wi-Fi、后端是否已启动；地址可在登录页长按 Logo 修改</text>
+      </view>
+      <view class="empty-slots" wx:elif="{{!hasSlots}}">
+        <text class="empty-slots-title">当日没有可预约时段</text>
+        <text class="empty-slots-sub">换个日期看看，或联系管理员确认开放时间</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 会议主题 ===== -->
+  <view class="card">
+    <view class="section">
+      <text class="section-label">会议主题</text>
+      <input
+        class="subject-input"
+        value="{{subject}}"
+        placeholder="请输入会议主题（必填）"
+        placeholder-class="subject-ph"
+        maxlength="100"
+        bindinput="onSubjectInput"
+      />
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="bottom-btn">
+    <view
+      class="btn-primary {{!canSubmit ? 'btn-disabled' : ''}}"
+      bindtap="submit"
+      hover-class="{{canSubmit ? 'btn-hover' : ''}}"
+      hover-stay-time="80"
+    >{{isEdit ? '保存修改' : '提交预约'}}</view>
+  </view>
+
+  <!-- ===== 时分滚轮弹层 ===== -->
+  <view
+    class="pk-mask {{pickerOpen ? 'show' : ''}}"
+    bindtap="cancelTimePicker"
+    catchtouchmove="noop"
+  ></view>
+
+  <view class="pk-sheet {{pickerOpen ? 'open' : ''}}" catchtouchmove="noop">
+    <view class="pk-grab"></view>
+
+    <view class="pk-head">
+      <text class="pk-title">{{pickerTitle}}</text>
+      <text class="pk-range">{{openTime}} – {{closeTime}}</text>
+    </view>
+
+    <picker-view
+      class="pk-view"
+      indicator-class="pk-indicator"
+      indicator-style="height: 80rpx; border-top: 1rpx solid #e4e9f0; border-bottom: 1rpx solid #e4e9f0;"
+      value="{{pickerValue}}"
+      bindchange="onPickerChange"
+    >
+      <picker-view-column>
+        <view
+          wx:for="{{hourOptions}}"
+          wx:key="*this"
+          class="pk-item {{pickerValue[0] === index ? 'on' : ''}}"
+        >{{item}}</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view
+          wx:for="{{minuteOptions}}"
+          wx:key="*this"
+          class="pk-item {{pickerValue[1] === index ? 'on' : ''}}"
+        >{{item}}</view>
+      </picker-view-column>
+    </picker-view>
+
+    <view class="pk-foot">
+      <view class="pk-cancel" bindtap="cancelTimePicker" hover-class="pk-btn-hover" hover-stay-time="60">取消</view>
+      <view class="pk-ok" bindtap="confirmTimePicker" hover-class="pk-btn-hover" hover-stay-time="60">确定</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,32 @@
+# 生产环境配置（--spring.profiles.active=prod）
+# ------------------------------------------------------------------
+# 所有敏感信息均从环境变量读取，缺失即启动失败（宁可起不来，也不要带着空密码连库）。
+# 启动示例：
+#   DB_URL=jdbc:mysql://db:3306/meeting_room?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai \
+#   DB_USERNAME=meeting_app DB_PASSWORD=****** \
+#   WECHAT_APPID=wx**** WECHAT_SECRET=****** \
+#   MEETING_CORS_ORIGINS=https://admin.example.com \
+#   java -jar meeting-room-backend.jar --spring.profiles.active=prod
+# ------------------------------------------------------------------
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+meeting:
+  # 生产严禁开启：开启等于任何人可伪造微信身份登录任意账号
+  wechat-mock: false
+  captcha-debug: false
+  # 必须替换为实际管理端域名，多个用英文逗号分隔
+  cors:
+    allowed-origins: ${MEETING_CORS_ORIGINS}
+
+# 生产不打 SQL 日志，避免日志量爆炸并把参数写进日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  level:
+    root: info

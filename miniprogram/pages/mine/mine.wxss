@@ -1,0 +1,376 @@
+.mine-page {
+  min-height: 100vh;
+  background: #f5f6f8;
+  padding-bottom: 60rpx;
+}
+
+/* ===== 用户信息 ===== */
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 56rpx 40rpx 80rpx;
+  background: linear-gradient(180deg, #2563eb 0%, #2258dd 55%, #1d4ed8 100%);
+  border-radius: 0 0 40rpx 40rpx;
+}
+
+/* 头像容器：点击可换头像，右下角带编辑角标 */
+.avatar-wrap {
+  position: relative;
+  width: 112rpx;
+  height: 112rpx;
+  margin-right: 28rpx;
+  flex-shrink: 0;
+}
+.avatar-wrap.avatar-hover {
+  opacity: 0.85;
+}
+
+.avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  font-size: 46rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 24rpx rgba(29, 78, 216, 0.28);
+  box-sizing: border-box;
+}
+
+.avatar-img {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10rpx 24rpx rgba(29, 78, 216, 0.28);
+  display: block;
+}
+
+.avatar-edit {
+  position: absolute;
+  right: -4rpx;
+  bottom: -4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2rpx solid #dbe4f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 10rpx rgba(29, 78, 216, 0.18);
+}
+
+.avatar-edit-icon {
+  font-size: 24rpx;
+  line-height: 1;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.avatar-edit-loading {
+  width: 20rpx;
+  height: 20rpx;
+  border: 3rpx solid #dbe4f3;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: btnSpin 0.7s linear infinite;
+}
+
+.profile-main {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 昵称一行：点击可改名 */
+.name-line {
+  display: flex;
+  align-items: center;
+  padding: 4rpx 0;
+  max-width: 100%;
+}
+.name-line.name-line-hover {
+  opacity: 0.8;
+}
+
+.name {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 380rpx;
+}
+
+.name-edit {
+  margin-left: 12rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.75);
+  flex-shrink: 0;
+}
+
+.phone-line {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.phone {
+  font-size: 25rpx;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.tag-ok {
+  margin-left: 14rpx;
+  font-size: 20rpx;
+  color: #15803d;
+  background: #ffffff;
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+}
+
+/* ===== 绑定提示卡 ===== */
+.bind-card {
+  display: flex;
+  align-items: center;
+  margin: -40rpx 32rpx 0;
+  padding: 28rpx 28rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 28rpx rgba(37, 99, 235, 0.12);
+  animation: fadeInUp 0.4s ease;
+}
+
+.bind-text {
+  flex: 1;
+  overflow: hidden;
+}
+
+.bind-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #111827;
+}
+
+.bind-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #9aa3b2;
+  line-height: 1.5;
+}
+
+/* 用 view 实现，规避微信 button 默认 width:184px 的撑宽问题 */
+.bind-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 152rpx;
+  height: 60rpx;
+  padding: 0 28rpx;
+  box-sizing: border-box;
+  margin-left: 20rpx;
+  border-radius: 30rpx;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  font-size: 25rpx;
+  line-height: 1;
+  box-shadow: 0 6rpx 14rpx rgba(37, 99, 235, 0.22);
+}
+.bind-btn.is-disabled {
+  opacity: 0.65;
+  box-shadow: none;
+}
+.bind-btn .btn-spinner {
+  width: 24rpx;
+  height: 24rpx;
+  border-width: 2rpx;
+  margin-right: 8rpx;
+}
+
+/* ===== 菜单 ===== */
+.cell-group {
+  margin: 24rpx 32rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  height: 104rpx;
+  padding: 0 28rpx;
+}
+
+.cell + .cell {
+  border-top: 1rpx solid #f2f4f7;
+}
+
+.cell-hover {
+  background: #fafbfc;
+}
+
+.cell-label {
+  flex: 1;
+  font-size: 29rpx;
+  color: #1f2937;
+}
+
+.cell-arrow {
+  font-size: 34rpx;
+  color: #cfd5de;
+}
+
+.cell-right {
+  display: flex;
+  align-items: center;
+}
+
+.cell-badge {
+  min-width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  border-radius: 16rpx;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 20rpx;
+  text-align: center;
+  margin-right: 10rpx;
+}
+
+/* 右侧展示当前值（昵称） */
+.cell-value {
+  font-size: 26rpx;
+  color: #9aa3b2;
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 10rpx;
+}
+
+/* 右侧展示当前头像缩略图 */
+.cell-avatar {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  margin-right: 10rpx;
+  background: #f2f4f7;
+  display: block;
+}
+
+.version {
+  text-align: center;
+  font-size: 22rpx;
+  color: #c3c9d4;
+  margin-top: 56rpx;
+}
+
+/* ===== 手机号输入弹窗 ===== */
+.dialog-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(17, 24, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.dialog {
+  width: 600rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx 32rpx;
+  box-sizing: border-box;
+}
+
+.dialog-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.dialog-input {
+  height: 88rpx;
+  background: #f5f6f8;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: #111827;
+}
+
+.dialog-input-ph {
+  color: #c3c9d4;
+}
+
+.dialog-hint {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 21rpx;
+  line-height: 1.5;
+  color: #9aa3b2;
+}
+
+.dialog-actions {
+  display: flex;
+  margin-top: 32rpx;
+}
+
+.dialog-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 76rpx;
+  font-size: 28rpx;
+  border-radius: 38rpx;
+  box-sizing: border-box;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.dialog-btn-hover {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.dialog-btn .btn-spinner {
+  width: 24rpx;
+  height: 24rpx;
+  border-width: 2rpx;
+  margin-right: 8rpx;
+}
+
+.dialog-btn.cancel {
+  background: #f2f4f7;
+  color: #4b5563;
+  margin-right: 20rpx;
+}
+
+.dialog-btn.confirm {
+  background: var(--brand-gradient);
+  color: #ffffff;
+}
+
+.dialog-btn.is-disabled {
+  opacity: 0.7;
+}

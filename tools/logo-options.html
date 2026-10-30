@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>登录页 Logo 方案对比</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 48px 40px 64px;
+    background: linear-gradient(180deg,#ffffff 0%,#e3ecff 26%,#f0f5ff 55%,#f5f6f8 100%);
+    min-height: 100vh;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #111827;
+  }
+  h1 { font-size: 20px; font-weight: 700; margin: 0 0 8px; }
+  p.sub { font-size: 13px; color: #6b7280; margin: 0 0 40px; line-height: 1.7; }
+
+  .grid { display: flex; gap: 28px; flex-wrap: wrap; }
+  .col {
+    background: #fff; border-radius: 20px; padding: 30px 22px 24px;
+    box-shadow: 0 2px 16px rgba(17,24,39,.07);
+    display: flex; flex-direction: column; align-items: center;
+    width: 200px;
+  }
+  .col.now { outline: 1px dashed #d1d5db; outline-offset: -1px; }
+  .name { font-size: 13px; font-weight: 600; color: #2563eb; margin-bottom: 22px; }
+  .col.now .name { color: #9aa3b2; }
+
+  /* ============ 通用底板 ============ */
+  .mark {
+    position: relative; border-radius: 19px; flex-shrink: 0;
+    background: linear-gradient(135deg,#4f8dfd 0%,#2563eb 100%);
+    box-shadow: 0 9px 22px rgba(37,99,235,.32);
+    overflow: hidden;
+  }
+  .mark.big { width: 66px; height: 66px; }
+  .mark.sm { width: 44px; height: 44px; border-radius: 13px; box-shadow: 0 6px 14px rgba(37,99,235,.28); }
+
+  /* 顶部高光：所有方案共用，让方块不像纯色贴片 */
+  .mark::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 52%;
+    background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0));
+    pointer-events: none;
+  }
+
+  /* ============ 方案 0：现状（会字） ============ */
+  .now-glyph {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 31px; line-height: 1;
+  }
+  .mark.sm .now-glyph { font-size: 21px; }
+
+  /* ============ 方案 A：拱门 ============ */
+  .door {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    top: 27%; width: 43%; height: 51%;
+    border: 2.6px solid #fff; border-bottom: none;
+    border-radius: 50% 50% 0 0 / 40% 40% 0 0;
+  }
+  .mark.sm .door { border-width: 1.8px; }
+  .knob {
+    position: absolute; right: 33%; top: 60%;
+    width: 3.4px; height: 3.4px; border-radius: 50%; background: #fff;
+  }
+  .mark.sm .knob { width: 2.4px; height: 2.4px; right: 34%; }
+
+  /* ============ 方案 B：双开门 ============ */
+  .panel { position: absolute; top: 25%; bottom: 25%; width: 24%; background: #fff; border-radius: 2.5px; }
+  .panel.l { left: 27%; }
+  .panel.r { right: 27%; }
+
+  /* ============ 方案 C：拱门 + 门槛 ============ */
+  .door.c { top: 24%; height: 47%; }
+  .sill { position: absolute; left: 50%; transform: translateX(-50%); bottom: 24%; width: 56%; height: 2.8px; background: #fff; border-radius: 2px; }
+  .sill::after, .sill::before { content: ''; position: absolute; top: 0; width: 2.8px; height: 8px; background: #fff; border-radius: 2px; }
+  .sill::before { left: 0; }
+  .sill::after { right: 0; }
+
+  /* ============ 方案 D：会字精致版 ============ */
+  .ring {
+    position: absolute; inset: 5px; border-radius: 15px;
+    border: 1px solid rgba(255,255,255,.28);
+  }
+  .mark.sm .ring { inset: 3.5px; border-radius: 10px; }
+  .glyph-d { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 600; font-size: 27px; letter-spacing: 1px; line-height: 1; }
+  .mark.sm .glyph-d { font-size: 18px; }
+
+  /* 品牌文字 */
+  .title { margin-top: 18px; font-size: 23px; font-weight: 700; letter-spacing: 1px; }
+  .caption { margin-top: 7px; font-size: 13px; color: #8a94a6; letter-spacing: .5px; }
+  .tags { margin-top: 20px; display: flex; gap: 14px; align-items: flex-end; }
+  .tag { font-size: 10px; color: #b6bdc9; text-align: center; }
+
+  h2 { font-size: 14px; font-weight: 600; margin: 56px 0 18px; color: #374151; }
+  .ctx {
+    background: #fff; border-radius: 20px; padding: 0; overflow: hidden;
+    box-shadow: 0 2px 16px rgba(17,24,39,.07); width: 340px;
+  }
+  .ctx-hero {
+    background: linear-gradient(180deg,#ffffff 0%,#e3ecff 40%,#f0f5ff 100%);
+    padding: 56px 0 40px; display: flex; flex-direction: column; align-items: center;
+  }
+  .ctx-hero .mark { width: 66px; height: 66px; }
+  .ctx-hero .title { font-size: 23px; }
+  .features { padding: 26px 40px 30px; }
+  .feat { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; font-size: 12px; color: #6b7280; }
+  .fdot { width: 28px; height: 28px; border-radius: 9px; background: #fff; box-shadow: 0 2px 7px rgba(37,99,235,.1);
+          display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .cta { margin: 0 30px 26px; height: 48px; border-radius: 24px;
+    background: linear-gradient(135deg,#4f8dfd,#2563eb); color: #fff; font-size: 16px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(37,99,235,.3); }
+</style>
+</head>
+<body>
+  <h1>登录页 Logo · 四个方案</h1>
+  <p class="sub">全部用 CSS 绘制，不切图，任何屏幕密度都清晰。尺寸为真机实际像素（大图 66px = 132rpx，小图 44px 用于对比小尺寸下的可辨识度）。</p>
+
+  <div class="grid">
+    <!-- 现状 -->
+    <div class="col now">
+      <div class="name">现状</div>
+      <div class="mark big"><div class="now-glyph">会</div></div>
+      <div class="title">会议室预约</div>
+      <div class="caption">预订更简单，开会更从容</div>
+      <div class="tags">
+        <div class="tag">66px</div>
+        <div class="tag"><div class="mark sm"><div class="now-glyph">会</div></div><div style="height:6px"></div>44px</div>
+      </div>
+    </div>
+
+    <!-- A 拱门 -->
+    <div class="col">
+      <div class="name">A · 拱门</div>
+      <div class="mark big">
+        <div class="door"></div><div class="knob"></div>
+      </div>
+      <div class="title">会议室预约</div>
+      <div class="caption">预订更简单，开会更从容</div>
+      <div class="tags">
+        <div class="tag">66px</div>
+        <div class="tag"><div class="mark sm"><div class="door"></div><div class="knob"></div></div><div style="height:6px"></div>44px</div>
+      </div>
+    </div>
+
+    <!-- B 双开门 -->
+    <div class="col">
+      <div class="name">B · 双开门</div>
+      <div class="mark big">
+        <div class="panel l"></div><div class="panel r"></div>
+      </div>
+      <div class="title">会议室预约</div>
+      <div class="caption">预订更简单，开会更从容</div>
+      <div class="tags">
+        <div class="tag">66px</div>
+        <div class="tag"><div class="mark sm"><div class="panel l"></div><div class="panel r"></div></div><div style="height:6px"></div>44px</div>
+      </div>
+    </div>
+
+    <!-- C 拱门 + 门槛 -->
+    <div class="col">
+      <div class="name">C · 拱门 + 门槛</div>
+      <div class="mark big">
+        <div class="door c"></div><div class="sill"></div>
+      </div>
+      <div class="title">会议室预约</div>
+      <div class="caption">预订更简单，开会更从容</div>
+      <div class="tags">
+        <div class="tag">66px</div>
+        <div class="tag"><div class="mark sm"><div class="door c"></div><div class="sill"></div></div><div style="height:6px"></div>44px</div>
+      </div>
+    </div>
+
+    <!-- D 会字精致版 -->
+    <div class="col">
+      <div class="name">D · 会字精致版</div>
+      <div class="mark big">
+        <div class="ring"></div><div class="glyph-d">会</div>
+      </div>
+      <div class="title">会议室预约</div>
+      <div class="caption">预订更简单，开会更从容</div>
+      <div class="tags">
+        <div class="tag">66px</div>
+        <div class="tag"><div class="mark sm"><div class="ring"></div><div class="glyph-d">会</div></div><div style="height:6px"></div>44px</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>放到登录页里看（以 A 拱门 为例）</h2>
+  <div class="ctx">
+    <div class="ctx-hero">
+      <div class="mark"><div class="door"></div><div class="knob"></div></div>
+      <div class="title">会议室预约</div>
+      <div class="caption">预订更简单，开会更从容</div>
+    </div>
+    <div class="features">
+      <div class="feat"><div class="fdot">🕐</div>实时查看每间会议室的空闲时段</div>
+      <div class="feat"><div class="fdot">📋</div>在线预约，审批进度随时可查</div>
+      <div class="feat"><div class="fdot">📍</div>到点签到，让资源不被浪费</div>
+    </div>
+    <div class="cta">微信一键登录</div>
+  </div>
+</body>
+</html>

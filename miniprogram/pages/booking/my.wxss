@@ -1,0 +1,223 @@
+.my-booking-page {
+  min-height: 100vh;
+  background: #f5f6f8;
+}
+
+/* ===== 状态切换 ===== */
+.tab-bar {
+  width: 100%;
+  background: #ffffff;
+  white-space: nowrap;
+  box-shadow: 0 2rpx 12rpx rgba(17, 24, 39, 0.04);
+}
+
+/* 五个状态等分整行：不能再用 inline-flex（宽度由内容决定，整条会挤在左边、
+   右边空一大片）。flex + width:100% 让每个 tab 拿 20% 宽，文字居中 */
+.tab-inner {
+  display: flex;
+  width: 100%;
+}
+
+.tab-item {
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+  padding: 26rpx 0;
+  font-size: 27rpx;
+  color: #6b7280;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.tab-item.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 36rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: #2563eb;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===== 列表 ===== */
+.booking-list {
+  padding: 24rpx 32rpx 40rpx;
+}
+
+.booking-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 18rpx;
+  box-shadow: var(--shadow-card);
+}
+
+.anim-item {
+  animation: fadeInUp 0.4s ease both;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subject {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 16rpx;
+}
+
+.room-line {
+  display: flex;
+  align-items: center;
+  margin-top: 14rpx;
+}
+
+.room-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #2563eb;
+  opacity: 0.55;
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+
+.room-name {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.time-row {
+  display: flex;
+  align-items: baseline;
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: #f8fafc;
+  border-radius: 12rpx;
+}
+
+.time-date {
+  font-size: 24rpx;
+  color: #8a94a6;
+  margin-right: 16rpx;
+}
+
+.time-range {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 1rpx;
+}
+.checkin-tip {
+  display: inline-block;
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #15803d;
+  background: #e6f4ee;
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.reject-reason {
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  color: #b91c1c;
+  background: #fdeaea;
+  padding: 14rpx 18rpx;
+  border-radius: 10rpx;
+  line-height: 1.5;
+}
+
+/* 违约说明：与驳回原因区分色系（违约是紫，驳回是红），避免用户混淆 */
+.violated-tip {
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  color: #6d28d9;
+  background: #f1edfa;
+  padding: 14rpx 18rpx;
+  border-radius: 10rpx;
+  line-height: 1.5;
+}
+
+/*
+ * 签到提示：说明「去哪儿扫、几点前有效」。
+ * 颜色用 #6c7486 而不是常见的 #94a3b8 —— 后者在白底上对比度不足 4.5:1。
+ */
+.sign-hint {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: #6c7486;
+  line-height: 1.5;
+}
+
+/* 窗口未开启：提示语用更浅的中性色，与「现在可以去扫」区分开 */
+.sign-hint-wait {
+  color: #8a94a6;
+}
+
+.card-foot {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 22rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f2f4f7;
+}
+
+.btn-ghost,
+.btn-primary-sm {
+  height: 62rpx;
+  line-height: 62rpx;
+  padding: 0 30rpx;
+  border-radius: 31rpx;
+  font-size: 25rpx;
+  text-align: center;
+  margin-left: 16rpx;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* 三个按钮并排时压缩内边距，避免 375pt 窄屏挤出边界 */
+.card-foot .btn-ghost + .btn-ghost,
+.card-foot .btn-ghost + .btn-primary-sm {
+  margin-left: 12rpx;
+}
+
+.btn-sm-hover {
+  transform: scale(0.94);
+  opacity: 0.9;
+}
+
+.btn-ghost {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.btn-primary-sm {
+  background: var(--brand-gradient);
+  color: #ffffff;
+  box-shadow: 0 6rpx 14rpx rgba(37, 99, 235, 0.22);
+}
+
+/*
+ * 窗口未开启的签到按钮：仍是主色但去饱和，表达「入口在这儿、时候还没到」。
+ * 不做成灰色禁用样式 —— 用户要能点，点了才知道为什么现在扫不了。
+ */
+.btn-primary-wait {
+  background: #93b0f0;
+  box-shadow: none;
+}
