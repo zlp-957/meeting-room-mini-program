@@ -26,7 +26,7 @@ class NicknameCheckTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"张李鹏", "小明同学", "Alice_2026", "会议达人", "Tom-Hanks", "产品 经理"})
+    @ValueSource(strings = {"张三", "小明同学", "Alice_2026", "会议达人", "Tom-Hanks", "产品 经理"})
     @DisplayName("正常昵称应通过，并去掉首尾空格")
     void shouldPass(String nickname) {
         assertEquals(nickname, service.check(nickname));
@@ -35,7 +35,7 @@ class NicknameCheckTest {
     @Test
     @DisplayName("首尾空格会被清理")
     void shouldTrim() {
-        assertEquals("张李鹏", service.check("  张李鹏  "));
+        assertEquals("张三", service.check("  张三  "));
     }
 
     @ParameterizedTest

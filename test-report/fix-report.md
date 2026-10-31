@@ -284,7 +284,7 @@ GET /upload/avatar/.../cd22...jpg    200，Content-Type: image/jpeg，34721 字�
 
 > image 组件在开发版和体验版不再支持加载 HTTP 协议的图片。
 
-本项目 `libVersion` 是 3.17.5，本地后端地址是 `http://192.168.1.106:8080`，于是：
+本项目 `libVersion` 是 3.17.5，本地后端地址是 `http://192.168.x.x:8080`，于是：
 
 1. `<image src="http://...">` 被拦 → 触发 `binderror`；
 2. 原来的 `onAvatarError()` 直接 `setData({ avatarUrl: '' })`；
